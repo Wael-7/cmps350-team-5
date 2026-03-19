@@ -333,3 +333,84 @@ function hasLiked(postId, userId) {
   if (!post) return false;
   return post.likes.includes(userId);
 }
+
+//------------------------------------------------------------------
+// COMMENT FUNCTIONS
+//------------------------------------------------------------------
+ 
+// Adding a comment to a post
+function addComment(postId, authorId, content) {
+  if (!content || content.trim() === "") {
+    return { success: false, error: "Comment cannot be empty." };
+  }
+ 
+  const posts = getPosts();
+  const index = posts.findIndex((p) => p.id === postId);
+ 
+  if (index === -1) {
+    return { success: false, error: "Post not found." };
+  }
+ 
+  const newComment = {
+    id: generateId(),
+    authorId: authorId,
+    content: content.trim(),
+    timestamp: new Date().toISOString(),
+  };
+ 
+  posts[index].comments.push(newComment);
+  savePosts(posts);
+ 
+  return { success: true, comment: newComment };
+}
+ 
+// Deleting a comment (only the comment author can delete)
+function deleteComment(postId, commentId, requestingUserId) {
+  const posts = getPosts();
+  const postIndex = posts.findIndex((p) => p.id === postId);
+ 
+  if (postIndex === -1) {
+    return { success: false, error: "Post not found." };
+  }
+ 
+  const commentIndex = posts[postIndex].comments.findIndex(
+    (c) => c.id === commentId
+  );
+ 
+  if (commentIndex === -1) {
+    return { success: false, error: "Comment not found." };
+  }
+ 
+  if (posts[postIndex].comments[commentIndex].authorId !== requestingUserId) {
+    return { success: false, error: "You can only delete your own comments." };
+  }
+ 
+  posts[postIndex].comments.splice(commentIndex, 1);
+  savePosts(posts);
+ 
+  return { success: true };
+}
+ 
+//------------------------------------------------------------------
+// UTILITY FUNCTIONS
+//------------------------------------------------------------------
+ 
+// Format a timestamp into a readable string (e.g. "March 19, 2026 10:30 AM")
+function formatTimestamp(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+ 
+// Clear ALL data from localStorage (useful for testing/reset)
+function clearAllData() {
+  localStorage.removeItem(KEYS.USERS);
+  localStorage.removeItem(KEYS.POSTS);
+  localStorage.removeItem(KEYS.CURRENT_USER);
+  initStorage();
+}
