@@ -242,3 +242,99 @@ body {
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
+
+/* --------------------------------------------------------------
+   SUBMIT BUTTON
+--------------------------------------------------------------- */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  margin-top: 4px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.925rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  letter-spacing: 0.2px;
+}
+ 
+.btn-submit:hover {
+  background-color: #2e2d2a;
+}
+ 
+.btn-submit:active {
+  transform: scale(0.99);
+}
+ 
+/* --------------------------------------------------------------
+   DIVIDER & LINK
+--------------------------------------------------------------- */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+ 
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+ 
+.divider-text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+ 
+.auth-link {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+ 
+.auth-link a {
+  color: var(--text-primary);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--text-primary);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+ 
+.auth-link a:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+ 
+/* --------------------------------------------------------------
+   GLOBAL ERROR BANNER
+--------------------------------------------------------------- */
+.global-error {
+  display: none;
+  background: var(--error-bg);
+  border: 1px solid #f0c4be;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--error);
+  margin-bottom: 4px;
+}
+ 
+.global-error.visible {
+  display: block;
+}
+ 
+/* --------------------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .card {
+    padding: 28px 20px;
+  }
+}
