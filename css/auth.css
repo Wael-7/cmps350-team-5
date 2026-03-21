@@ -117,3 +117,128 @@ body {
   color: var(--text-secondary);
   font-weight: 400;
 }
+
+/* --------------------------------------------------------------
+   FORM
+--------------------------------------------------------------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+ 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+ 
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+ 
+.input-wrapper {
+  position: relative;
+}
+ 
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.925rem;
+  color: var(--text-primary);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+ 
+.form-input::placeholder {
+  color: #b5b3ac;
+}
+ 
+.form-input:focus {
+  border-color: var(--input-focus);
+  background: #ffffff;
+}
+ 
+.form-input.error {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+ 
+.form-input.valid {
+  border-color: var(--success);
+}
+ 
+/* Password toggle button */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 0.2s;
+}
+ 
+.toggle-password:hover {
+  color: var(--text-primary);
+}
+ 
+.form-input.has-toggle {
+  padding-right: 40px;
+}
+ 
+/* Error message */
+.error-msg {
+  font-size: 0.78rem;
+  color: var(--error);
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+ 
+.error-msg.visible {
+  display: flex;
+}
+ 
+/* Password strength bar */
+.strength-bar-wrapper {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+ 
+.strength-bar-wrapper.visible {
+  display: flex;
+}
+ 
+.strength-bar-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+ 
+.strength-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+ 
+.strength-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
