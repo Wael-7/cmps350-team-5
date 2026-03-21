@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hive — Sign In</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/auth.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
+
+      <!-- Brand -->
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z"/>
+          </svg>
+        </div>
+        <span class="brand-name">Hive</span>
+      </div>
+
+      <!-- Card -->
+      <div class="card">
+        <div class="card-header">
+          <h1 class="card-title">Welcome back</h1>
+          <p class="card-subtitle">Sign in to your Hive account to continue.</p>
+        </div>
+
+        <!-- Global error banner -->
+        <div class="global-error" id="globalError"></div>
+
+        <form class="form" id="loginForm" novalidate>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label" for="email">Email address</label>
+            <div class="input-wrapper">
+              <input
+                class="form-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+              />
+            </div>
+            <span class="error-msg" id="emailError">Please enter your email address.</span>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-wrapper">
+              <input
+                class="form-input has-toggle"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Your password"
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <span class="error-msg" id="passwordError">Please enter your password.</span>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-submit">Sign In</button>
+
+          <!-- Divider -->
+          <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">don't have an account?</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Register link -->
+          <p class="auth-link">
+            <a href="register.html">Create an account</a>
+          </p>
+
+        </form>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>
