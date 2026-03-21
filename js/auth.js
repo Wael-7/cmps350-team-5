@@ -1,7 +1,6 @@
-// =============================================
+//------------------------------------------------------------------
 // auth.js — Registration & Login logic
-// Hive Social Media Platform — CMPS 350
-// =============================================
+//------------------------------------------------------------------
 
 // Initialize storage on every auth page load
 initStorage();
@@ -11,9 +10,9 @@ if (isLoggedIn()) {
   window.location.href = "feed.html";
 }
 
-// =============================================
+//------------------------------------------------------------------
 // HELPERS
-// =============================================
+//------------------------------------------------------------------
 
 function showError(input, errorEl, message) {
   input.classList.add("error");
@@ -41,9 +40,9 @@ function isValidUsername(username) {
   return /^[a-zA-Z0-9_]{3,30}$/.test(username);
 }
 
-// =============================================
+//------------------------------------------------------------------
 // PASSWORD TOGGLE
-// =============================================
+//------------------------------------------------------------------
 
 function setupToggle(toggleBtn, inputEl, eyeIconEl) {
   toggleBtn.addEventListener("click", () => {
@@ -55,9 +54,9 @@ function setupToggle(toggleBtn, inputEl, eyeIconEl) {
   });
 }
 
-// =============================================
+//------------------------------------------------------------------
 // REGISTER PAGE
-// =============================================
+//------------------------------------------------------------------
 
 const registerForm = document.getElementById("registerForm");
 
@@ -173,5 +172,64 @@ if (registerForm) {
       clearError(confirmInput, confirmError);
       markValid(confirmInput);
     }
+  });
+
+  // Form submission
+  registerForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    globalError.classList.remove("visible");
+ 
+    const username = usernameInput.value.trim();
+    const email    = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirm  = confirmInput.value;
+ 
+    let valid = true;
+ 
+    if (!username) {
+      showError(usernameInput, usernameError, "Please enter a username.");
+      valid = false;
+    } else if (!isValidUsername(username)) {
+      showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only.");
+      valid = false;
+    }
+ 
+    if (!email) {
+      showError(emailInput, emailError, "Please enter your email address.");
+      valid = false;
+    } else if (!isValidEmail(email)) {
+      showError(emailInput, emailError, "Please enter a valid email address.");
+      valid = false;
+    }
+ 
+    if (!password) {
+      showError(passwordInput, passwordError, "Please enter a password.");
+      valid = false;
+    } else if (password.length < 8) {
+      showError(passwordInput, passwordError, "Password must be at least 8 characters.");
+      valid = false;
+    }
+ 
+    if (!confirm) {
+      showError(confirmInput, confirmError, "Please confirm your password.");
+      valid = false;
+    } else if (confirm !== password) {
+      showError(confirmInput, confirmError, "Passwords do not match.");
+      valid = false;
+    }
+ 
+    if (!valid) return;
+ 
+    // Call storage.js
+    const result = registerUser(username, email, password);
+ 
+    if (!result.success) {
+      globalError.textContent = result.error;
+      globalError.classList.add("visible");
+      return;
+    }
+ 
+    // Success — redirect to login
+    window.location.href = "login.html";
   });
 }
