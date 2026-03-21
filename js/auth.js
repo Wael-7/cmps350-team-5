@@ -233,3 +233,85 @@ if (registerForm) {
     window.location.href = "login.html";
   });
 }
+
+// ---------------------------------------------------------------
+// LOGIN PAGE
+// ---------------------------------------------------------------
+ 
+const loginForm = document.getElementById("loginForm");
+ 
+if (loginForm) {
+  const emailInput    = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const globalError   = document.getElementById("globalError");
+  const emailError    = document.getElementById("emailError");
+  const passwordError = document.getElementById("passwordError");
+ 
+  // Setup password toggle
+  setupToggle(
+    document.getElementById("togglePassword"),
+    passwordInput,
+    document.getElementById("eyeIcon")
+  );
+ 
+  // Live validation on blur
+  emailInput.addEventListener("blur", () => {
+    const val = emailInput.value.trim();
+    if (!val) {
+      showError(emailInput, emailError, "Please enter your email address.");
+    } else if (!isValidEmail(val)) {
+      showError(emailInput, emailError, "Please enter a valid email address.");
+    } else {
+      clearError(emailInput, emailError);
+      markValid(emailInput);
+    }
+  });
+ 
+  passwordInput.addEventListener("blur", () => {
+    const val = passwordInput.value;
+    if (!val) {
+      showError(passwordInput, passwordError, "Please enter your password.");
+    } else {
+      clearError(passwordInput, passwordError);
+      markValid(passwordInput);
+    }
+  });
+ 
+  // Form submission
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    globalError.classList.remove("visible");
+ 
+    const email    = emailInput.value.trim();
+    const password = passwordInput.value;
+ 
+    let valid = true;
+ 
+    if (!email) {
+      showError(emailInput, emailError, "Please enter your email address.");
+      valid = false;
+    } else if (!isValidEmail(email)) {
+      showError(emailInput, emailError, "Please enter a valid email address.");
+      valid = false;
+    }
+ 
+    if (!password) {
+      showError(passwordInput, passwordError, "Please enter your password.");
+      valid = false;
+    }
+ 
+    if (!valid) return;
+ 
+    // Call storage.js
+    const result = loginUser(email, password);
+ 
+    if (!result.success) {
+      globalError.textContent = result.error;
+      globalError.classList.add("visible");
+      return;
+    }
+ 
+    // Success — redirect to feed
+    window.location.href = "feed.html";
+  });
+}
