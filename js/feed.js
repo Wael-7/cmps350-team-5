@@ -100,6 +100,27 @@ function createPostCard(post) {
     const header = document.createElement("div");
     header.className = "post-header";
 
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn-delete";
+    deleteBtn.innerHTML = "🗑️"; // temporary icon
+    deleteBtn.style.display = isUserLoggedIn && post.authorId === currentUser.id ? "block" : "none";
+
+    deleteBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to delete this post?")) {
+            const result = deletePost(post.id, currentUser.id);
+            if (result.success) {
+                loadFeed();  // Re-render feed
+                alert("Post deleted successfully!");
+            } else {
+                alert("Error: " + result.error);
+            }
+        }
+    });
+
+    header.appendChild(deleteBtn);
+
+
     const authorInfo = document.createElement("div");
     authorInfo.className = "author-info";
 
