@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Feed</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link rel="stylesheet" href="css/feed.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z" />
+                    </svg>
+                </div>
+                <span class="brand-name">Hive</span>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-profile">
+                <img class="user-avatar" src="" alt="Avatar" />
+                <span class="user-name"></span>
+            </div>
+            <button class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="feed-container">
+        <div id="feed"></div>
+    </div>
+
+    <button class="floatingButton" id="fbCreatePost">+</button>
+    <div id="createPostModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close">&times;</button>
+            <form id="createPostForm">
+                <textarea id="postContent" placeholder="Share your thoughts..."></textarea>
+                <button type="submit" class="btn-Post">Post</button>
+                <button type="button" id="cancelPost" class="btn-Cancel">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="js/storage.js"></script>
+    <script src="js/feed.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+// Initializing and checking user
+
+initStorage();
+
+const currentUser = isLoggedIn() ? getCurrentUser() : null;
+const isUserLoggedIn = currentUser !== null;
+
+//Navbar setup
+
+if (isUserLoggedIn) {
+    document.querySelector(".user-name").textContent = currentUser.username;
+    const avatar = document.querySelector(".user-avatar");
+    if (currentUser.profilePicture) {
+        avatar.src = currentUser.profilePicture;
+    } else {
+        avatar.src =
+            `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+    }
+
+    document.querySelector(".btn-logout").addEventListener("click", () => {
+        logoutUser();
+        window.location.href = "login.html";
+    });
+} else {
+    document.querySelector(".user-name").textContent = "Guest";
+    document.querySelector(".btn-logout").textContent = "Login";
+    document.querySelector(".btn-logout").addEventListener("click", () => {
+        window.location.href = "login.html";
+    });
+}
+
+// Floating button setup
+
+const floatingBtn = document.getElementById("fbCreatePost");
+if (!isUserLoggedIn) {
+    floatingBtn.disabled = true;
+    floatingBtn.style.opacity = "0.5";
+    floatingBtn.title = "Please log in to create a post";
+}
+
+floatingBtn.addEventListener("click", () => {
+    if (!isUserLoggedIn) {
+        alert("Please log in to create a post.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("createPostModal").classList.remove("hidden");
+});
+
+// Modal setup
+
+
+const modal = document.getElementById("createPostModal");
+const floatingButton = document.getElementById("fbCreatePost");
+const closeButton = document.querySelector(".close");
+const cancelBtn = document.getElementById("cancelPost");
+
+closeButton.addEventListener("click", () => {
+    modal.classList.add("hidden");
+});
+
+cancelBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+});
+
+window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+    }
+});
+
+
+// Feed setup
+
+function loadFeed() {
+    const feedContainer = document.getElementById("feed");
+    feedContainer.innerHTML = "";
+
+    const allPosts = getPosts();
+
+    if (allPosts.length === 0) {
+        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>No posts yet. Be the first to share something!</p>";
+        return;
+    }
+
+    allPosts.forEach((post) => {
+        const postCard = createPostCard(post);
+        feedContainer.appendChild(postCard);
+    });
+}
+
+function createPostCard(post) {
+    const author = getUserById(post.authorId);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.postId = post.id;
+
+    const header = document.createElement("div");
+    header.className = "post-header";
+
+    const authorInfo = document.createElement("div");
+    authorInfo.className = "author-info";
+
+    const authorName = document.createElement("h3");
+    authorName.className = "author-name";
+    authorName.textContent = author ? author.username : "Unknown User";
+
+    const authorAvatar = document.createElement("img");
+    authorAvatar.className = "author-avatar";
+
+    const timestamp = document.createElement("span");
+    timestamp.className = "post-timestamp";
+    timestamp.textContent = formatTimestamp(post.timestamp);
+
+    authorInfo.appendChild(authorName);
+    header.appendChild(authorAvatar);
+    header.appendChild(authorInfo);
+    header.appendChild(timestamp);
+
+    const content = document.createElement("p");
+    content.className = "post-content";
+    content.textContent = post.content;
+
+    const footer = document.createElement("div");
+    footer.className = "post-footer";
+
