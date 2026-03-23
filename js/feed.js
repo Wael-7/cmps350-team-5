@@ -126,3 +126,59 @@ function createPostCard(post) {
     const footer = document.createElement("div");
     footer.className = "post-footer";
 
+    const likeBtn = document.createElement("button");
+    likeBtn.className = "like-btn";
+    likeBtn.innerHTML = `🤍 ${post.likes.length}`; //temporary icon
+    likeBtn.disabled = !isUserLoggedIn;
+
+    if (!isUserLoggedIn) {
+        likeBtn.title = "Login to like";
+        likeBtn.style.opacity = "0.5";
+        likeBtn.addEventListener("click", () => {
+            alert("Please login to like posts");
+            window.location.href = "login.html";
+        });
+    } else {
+        likeBtn.addEventListener("click", () => {
+            const result = toggleLike(post.id, currentUser.id);
+            if (result.success) {
+                loadFeed();
+            }
+        });
+    }
+
+
+    footer.appendChild(likeBtn);
+
+    card.appendChild(header);
+    card.appendChild(content);
+    card.appendChild(footer);
+
+    return card;
+}
+
+loadFeed();
+
+// Post creation setup
+
+const createPostForm = document.getElementById("createPostForm");
+const postContentInput = document.getElementById("postContent");
+
+createPostForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const content = postContentInput.value.trim();
+
+    if (!content) {
+        alert("Post cannot be empty.");
+        return;
+    }
+    const result = createPost(currentUser.id, content);
+    if (result.success) {
+        createPostForm.reset();
+        modal.classList.add("hidden");
+        loadFeed();
+        alert("Post created successfully!");
+    } else {
+        alert("Error: " + result.error);
+    }
+});
