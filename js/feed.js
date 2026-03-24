@@ -111,7 +111,6 @@ function createPostCard(post) {
             const result = deletePost(post.id, currentUser.id);
             if (result.success) {
                 loadFeed();  // Re-render feed
-                alert("Post deleted successfully!");
             } else {
                 alert("Error: " + result.error);
             }
@@ -149,7 +148,7 @@ function createPostCard(post) {
 
     const likeBtn = document.createElement("button");
     likeBtn.className = "like-btn";
-    likeBtn.innerHTML = `🤍 ${post.likes.length}`; //temporary icon
+    likeBtn.innerHTML = ` ${post.likes.length}`; //temporary icon
     likeBtn.disabled = !isUserLoggedIn;
 
     if (!isUserLoggedIn) {
@@ -198,7 +197,6 @@ createPostForm.addEventListener("submit", (e) => {
         createPostForm.reset();
         modal.classList.add("hidden");
         loadFeed();
-        alert("Post created successfully!");
     } else {
         alert("Error: " + result.error);
     }
