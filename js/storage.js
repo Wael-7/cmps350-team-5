@@ -284,16 +284,16 @@ function getPostsByUser(userId) {
   return posts.filter((p) => p.authorId === userId);
 }
  
-// Getting news feed posts for a user (posts from users they follow)
+// Getting news feed posts for a user (posts from users they follow OR their own posts)
 function getFeedPosts(userId) {
   const user = getUserById(userId);
   if (!user) return [];
  
   const posts = getPosts();
  
-  // Return posts from followed users, sorted newest first
+  // Return posts from followed users OR own posts, sorted newest first
   return posts
-    .filter((p) => user.following.includes(p.authorId))
+    .filter((p) => user.following.includes(p.authorId) || p.authorId === userId)
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 }
  

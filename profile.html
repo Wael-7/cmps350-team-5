@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Hive</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+
 <body>
   <nav class="navbar">
     <div class="navbar-left">
@@ -23,25 +35,33 @@
 
     <!-- User Info -->
     <div class="profile-header">
-      <img id="profilePic" />
-      <h2 id="username"></h2>
-      <p id="bio"></p>
+      <img id="profilePic" class="profile-pic" />
+      <h2 id="username" class="profile-username"></h2>
+      <p id="bio" class="profile-bio"></p>
 
-      <p>
-        <span id="followersCount"></span> Followers
+      <div class="profile-stats">
+        <span id="followersCount" class="stat-count"></span> Followers
         •
-        <span id="followingCount"></span> Following
-      </p>
+        <span id="followingCount" class="stat-count"></span> Following
+      </div>
 
-      <button id="followBtn"></button>
-      <button id="editProfileBtn"></button>
+      <div class="profile-buttons">
+        <button id="followBtn" class="btn-action"></button>
+        <button id="editProfileBtn" class="btn-action"></button>
+        <button id="backToFeedBtn" class="btn-back">← Back to Feed</button>
+      </div>
     </div>
 
     <!-- User Posts -->
-    <div id="userPosts"></div>
+    <div class="posts-section">
+      <h3>Posts</h3>
+      <div id="userPosts"></div>
+    </div>
 
   </div>
 
   <script src="js/storage.js"></script>
   <script src="js/profile.js"></script>
 </body>
+
+</html>

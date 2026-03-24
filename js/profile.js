@@ -166,14 +166,14 @@ function renderUserPosts() {
 
   const posts = getPostsByUser(targetUser.id);
   if (posts.length === 0) {
-    postsContainer.innerHTML = "<p style='text-align:center;color:#999;'>No posts yet.</p>";
+    postsContainer.innerHTML = "<p>No posts yet.</p>";
     return;
   }
 
   const sorted = posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   sorted.forEach((post) => {
     const postCard = document.createElement("div");
-    postCard.className = "card";
+    postCard.className = "post-card";
 
     const content = document.createElement("p");
     content.textContent = post.content;
@@ -215,3 +215,11 @@ function refreshProfile() {
 
 setNavbar();
 displayUser();
+
+// Back to Feed button
+const backBtn = document.getElementById("backToFeedBtn");
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
+}

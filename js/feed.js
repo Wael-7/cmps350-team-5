@@ -220,8 +220,70 @@ function createPostCard(post) {
 }
 
 loadFeed();
+loadUserList();
 
-// Post creation setup
+// User discovery setup
+
+function loadUserList() {
+    const userListContainer = document.getElementById("userList");
+    userListContainer.innerHTML = "";
+
+    if (!isUserLoggedIn) {
+        userListContainer.innerHTML = "<p>Please log in to discover users.</p>";
+        return;
+    }
+
+    const allUsers = getUsers().filter(u => u.id !== currentUser.id);
+
+    if (allUsers.length === 0) {
+        userListContainer.innerHTML = "<p>No other users yet. Invite friends to join!</p>";
+        return;
+    }
+
+    allUsers.forEach(user => {
+        const userCard = document.createElement("div");
+        userCard.className = "user-card";
+
+        const userInfo = document.createElement("div");
+        userInfo.className = "user-info";
+
+        const avatar = document.createElement("img");
+        avatar.className = "user-avatar-small";
+        avatar.src = user.profilePicture || `https://ui-avatars.com/api/?name=${user.username}&background=d4a853&color=fff`;
+
+        const name = document.createElement("span");
+        name.className = "user-name-small";
+        name.textContent = user.username;
+        name.style.cursor = "pointer";
+        name.addEventListener("click", () => {
+            window.location.href = `profile.html?id=${user.id}`;
+        });
+
+        userInfo.appendChild(avatar);
+        userInfo.appendChild(name);
+
+        const followBtn = document.createElement("button");
+        followBtn.className = "btn-follow";
+        followBtn.textContent = isFollowing(currentUser.id, user.id) ? "Unfollow" : "Follow";
+        followBtn.addEventListener("click", () => {
+            const result = isFollowing(currentUser.id, user.id)
+                ? unfollowUser(currentUser.id, user.id)
+                : followUser(currentUser.id, user.id);
+
+            if (result.success) {
+                loadUserList(); // Refresh list
+                loadFeed(); // Refresh feed to show new posts
+            } else {
+                alert(result.error);
+            }
+        });
+
+        userCard.appendChild(userInfo);
+        userCard.appendChild(followBtn);
+
+        userListContainer.appendChild(userCard);
+    });
+}
 
 const createPostForm = document.getElementById("createPostForm");
 const postContentInput = document.getElementById("postContent");
