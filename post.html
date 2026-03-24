@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link rel="stylesheet" href="css/post.css" />
+</head>
+
+<body>
+    <div class="post-header-bar">
+        <button class="btn-back" onclick="window.location.href='feed.html'">← Back to Feed</button>
+    </div>
+    <div class="post-container">
+        <div id="singlePost" class="card">
+            <div class="post-header">
+                <button class="btn-delete" id="deletePostBtn" style="display: none;">🗑️</button>
+                <div class="author-info">
+                    <img class="author-avatar" src="" alt="Author Avatar" />
+                    <div>
+                        <h3 class="author-name"></h3>
+                        <span class="post-timestamp"></span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="post-content"></p>
+
+            <div class="post-footer">
+                <button class="like-btn" id="likeBtn">
+                    <span class="like-count">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="js/storage.js"></script>
+    <script src="js/post.js"></script>
+</body>
+
+</html>

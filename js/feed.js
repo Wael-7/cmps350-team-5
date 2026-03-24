@@ -179,6 +179,13 @@ function createPostCard(post) {
     card.appendChild(content);
     card.appendChild(footer);
 
+    card.addEventListener("click", (e) => {
+        // Don't navigate if clicking the delete button
+        if (e.target.closest(".btn-delete")) return;
+
+        window.location.href = `post.html?id=${post.id}`;
+    });
+
     return card;
 }
 
