@@ -2,6 +2,7 @@
 initStorage();
 const currentUser = isLoggedIn() ? getCurrentUser() : null;
 const isUserLoggedIn = currentUser !== null;
+if (!isLoggedIn()) window.location.href = "login.html";
 
 // Get post ID from URL parameters
 const urlParams = new URLSearchParams(window.location.search);

@@ -4,6 +4,7 @@ initStorage();
 
 const currentUser = isLoggedIn() ? getCurrentUser() : null;
 const isUserLoggedIn = currentUser !== null;
+if (!isLoggedIn()) window.location.href = "login.html";
 
 //Navbar setup
 
