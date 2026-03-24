@@ -129,6 +129,11 @@ function createPostCard(post) {
 
     const authorAvatar = document.createElement("img");
     authorAvatar.className = "author-avatar";
+    if (author && author.profilePicture) {
+        authorAvatar.src = author.profilePicture;
+    } else {
+        authorAvatar.src = `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
+    }
 
     const timestamp = document.createElement("span");
     timestamp.className = "post-timestamp";
