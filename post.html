@@ -8,11 +8,34 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="css/auth.css" />
+        
+    <link rel="stylesheet" href="css/feed.css" />
     <link rel="stylesheet" href="css/post.css" />
 </head>
 
 <body>
+
+        <!-- Navbar (same as feed.html) -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z" />
+                    </svg>
+                </div>
+                <span class="brand-name">Hive</span>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-profile">
+                <img class="user-avatar" src="" alt="Avatar" />
+                <span class="user-name"></span>
+            </div>
+            <button class="btn-logout">Logout</button>
+        </div>
+    </nav>
+    //--- Back button and post container --------------
     <div class="post-header-bar">
         <button class="btn-back" onclick="window.location.href='feed.html'">← Back to Feed</button>
     </div>

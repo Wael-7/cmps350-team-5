@@ -4,6 +4,7 @@ initStorage();
 
 const currentUser = isLoggedIn() ? getCurrentUser() : null;
 const isUserLoggedIn = currentUser !== null;
+if (!isLoggedIn()) window.location.href = "login.html";
 
 //Navbar setup
 
@@ -77,8 +78,7 @@ function loadFeed() {
     const feedContainer = document.getElementById("feed");
     feedContainer.innerHTML = "";
 
-    const allPosts = getPosts();
-
+const allPosts = getPosts();
     if (allPosts.length === 0) {
         feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>No posts yet. Be the first to share something!</p>";
         return;
