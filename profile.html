@@ -1,0 +1,47 @@
+<body>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z" />
+          </svg>
+        </div>
+        <span class="brand-name">Hive</span>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <div class="user-profile">
+        <img class="user-avatar" src="" alt="Avatar" />
+        <span class="user-name"></span>
+      </div>
+      <button class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <div class="profile-container">
+
+    <!-- User Info -->
+    <div class="profile-header">
+      <img id="profilePic" />
+      <h2 id="username"></h2>
+      <p id="bio"></p>
+
+      <p>
+        <span id="followersCount"></span> Followers
+        •
+        <span id="followingCount"></span> Following
+      </p>
+
+      <button id="followBtn"></button>
+      <button id="editProfileBtn"></button>
+    </div>
+
+    <!-- User Posts -->
+    <div id="userPosts"></div>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/profile.js"></script>
+</body>

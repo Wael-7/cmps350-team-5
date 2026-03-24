@@ -8,14 +8,23 @@ const isUserLoggedIn = currentUser !== null;
 //Navbar setup
 
 if (isUserLoggedIn) {
-    document.querySelector(".user-name").textContent = currentUser.username;
+    const userNameEl = document.querySelector(".user-name");
     const avatar = document.querySelector(".user-avatar");
+
+    userNameEl.textContent = currentUser.username;
     if (currentUser.profilePicture) {
         avatar.src = currentUser.profilePicture;
     } else {
         avatar.src =
             `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
     }
+
+    // Navigation: navbar user profile click leads to profile page
+    const userProfileContainer = document.querySelector(".user-profile");
+    userProfileContainer.style.cursor = "pointer";
+    userProfileContainer.addEventListener("click", () => {
+        window.location.href = `profile.html?id=${currentUser.id}`;
+    });
 
     document.querySelector(".btn-logout").addEventListener("click", () => {
         logoutUser();
@@ -77,10 +86,15 @@ function loadFeed() {
     const feedContainer = document.getElementById("feed");
     feedContainer.innerHTML = "";
 
-    const allPosts = getPosts();
+    const allPosts = isUserLoggedIn ? getFeedPosts(currentUser.id) : getPosts();
+
+    if (!isUserLoggedIn) {
+        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>Please log in to see your feed.</p>";
+        return;
+    }
 
     if (allPosts.length === 0) {
-        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>No posts yet. Be the first to share something!</p>";
+        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>No posts from users you follow yet. Follow people to fill your feed.</p>";
         return;
     }
 
@@ -126,9 +140,24 @@ function createPostCard(post) {
     const authorName = document.createElement("h3");
     authorName.className = "author-name";
     authorName.textContent = author ? author.username : "Unknown User";
+    authorName.style.cursor = "pointer";
+    authorName.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (author) {
+            window.location.href = `profile.html?id=${author.id}`;
+        }
+    });
 
     const authorAvatar = document.createElement("img");
     authorAvatar.className = "author-avatar";
+    authorAvatar.style.cursor = "pointer";
+    authorAvatar.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (author) {
+            window.location.href = `profile.html?id=${author.id}`;
+        }
+    });
+
     if (author && author.profilePicture) {
         authorAvatar.src = author.profilePicture;
     } else {
