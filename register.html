@@ -11,134 +11,138 @@
     <link rel="stylesheet" href="css/auth.css" />
   </head>
   <body>
-    <div class="page-wrapper">
+    <div class="auth-page">
 
-      <!-- Brand -->
-      <div class="brand">
-        <div class="brand-logo">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z"/>
-          </svg>
+      <!-- LEFT PANEL — Branded -->
+      <div class="auth-panel">
+        <div class="panel-content">
+          <div class="panel-logo-mark">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z"/>
+            </svg>
+          </div>
+          <div class="panel-brand-name">Hive</div>
+          <div class="panel-tagline">Connect. Share. Thrive.</div>
+          <div class="panel-dots">
+            <span></span><span></span><span></span>
+          </div>
         </div>
-        <span class="brand-name">Hive</span>
       </div>
 
-      <!-- Card -->
-      <div class="card">
-        <div class="card-header">
-          <h1 class="card-title">Create your account</h1>
-          <p class="card-subtitle">Join Hive and start sharing with your community.</p>
-        </div>
+      <!-- RIGHT PANEL — Form -->
+      <div class="auth-form-side">
+        <div class="auth-form-wrapper">
 
-        <!-- Global error banner (e.g. email already taken) -->
-        <div class="global-error" id="globalError"></div>
-
-        <form class="form" id="registerForm" novalidate>
-
-          <!-- Username -->
-          <div class="form-group">
-            <label class="form-label" for="username">Username</label>
-            <div class="input-wrapper">
-              <input
-                class="form-input"
-                type="text"
-                id="username"
-                name="username"
-                placeholder="e.g. john_doe"
-                autocomplete="username"
-                maxlength="30"
-              />
-            </div>
-            <span class="error-msg" id="usernameError">Please enter a username.</span>
+          <div class="form-header">
+            <h1 class="form-title">Create your account</h1>
+            <p class="form-subtitle">Join Hive and start sharing with your community.</p>
           </div>
 
-          <!-- Email -->
-          <div class="form-group">
-            <label class="form-label" for="email">Email address</label>
-            <div class="input-wrapper">
-              <input
-                class="form-input"
-                type="email"
-                id="email"
-                name="email"
-                placeholder="you@example.com"
-                autocomplete="email"
-              />
-            </div>
-            <span class="error-msg" id="emailError">Please enter a valid email address.</span>
-          </div>
+          <div class="global-error" id="globalError"></div>
 
-          <!-- Password -->
-          <div class="form-group">
-            <label class="form-label" for="password">Password</label>
-            <div class="input-wrapper">
-              <input
-                class="form-input has-toggle"
-                type="password"
-                id="password"
-                name="password"
-                placeholder="At least 8 characters"
-                autocomplete="new-password"
-              />
-              <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
-                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-            </div>
-            <!-- Strength bar -->
-            <div class="strength-bar-wrapper" id="strengthWrapper">
-              <div class="strength-bar-track">
-                <div class="strength-bar-fill" id="strengthFill"></div>
+          <form class="form" id="registerForm" novalidate>
+
+            <!-- Username -->
+            <div class="form-group">
+              <label class="form-label" for="username">Username</label>
+              <div class="input-wrapper">
+                <input
+                  class="form-input"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="e.g. john_doe"
+                  autocomplete="username"
+                  maxlength="30"
+                />
               </div>
-              <span class="strength-label" id="strengthLabel"></span>
+              <span class="error-msg" id="usernameError"></span>
             </div>
-            <span class="error-msg" id="passwordError">Password must be at least 8 characters.</span>
-          </div>
 
-          <!-- Confirm Password -->
-          <div class="form-group">
-            <label class="form-label" for="confirmPassword">Confirm password</label>
-            <div class="input-wrapper">
-              <input
-                class="form-input has-toggle"
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Re-enter your password"
-                autocomplete="new-password"
-              />
-              <button type="button" class="toggle-password" id="toggleConfirm" aria-label="Show confirm password">
-                <svg id="eyeIconConfirm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
+            <!-- Email -->
+            <div class="form-group">
+              <label class="form-label" for="email">Email address</label>
+              <div class="input-wrapper">
+                <input
+                  class="form-input"
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                />
+              </div>
+              <span class="error-msg" id="emailError"></span>
             </div>
-            <span class="error-msg" id="confirmError">Passwords do not match.</span>
-          </div>
 
-          <!-- Submit -->
-          <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
+            <!-- Password -->
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <div class="input-wrapper">
+                <input
+                  class="form-input has-toggle"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="At least 8 characters"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+                  <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="strength-bar-wrapper" id="strengthWrapper">
+                <div class="strength-bar-track">
+                  <div class="strength-bar-fill" id="strengthFill"></div>
+                </div>
+                <span class="strength-label" id="strengthLabel"></span>
+              </div>
+              <span class="error-msg" id="passwordError"></span>
+            </div>
 
-          <!-- Divider -->
-          <div class="divider">
-            <div class="divider-line"></div>
-            <span class="divider-text">already have an account?</span>
-            <div class="divider-line"></div>
-          </div>
+            <!-- Confirm Password -->
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Confirm password</label>
+              <div class="input-wrapper">
+                <input
+                  class="form-input has-toggle"
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Re-enter your password"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="toggle-password" id="toggleConfirm" aria-label="Show confirm password">
+                  <svg id="eyeIconConfirm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <span class="error-msg" id="confirmError"></span>
+            </div>
 
-          <!-- Login link -->
-          <p class="auth-link">
-            <a href="login.html">Sign in to Hive</a>
-          </p>
+            <button type="submit" class="btn-submit">Create Account</button>
 
-        </form>
+            <div class="divider">
+              <div class="divider-line"></div>
+              <span class="divider-text">already have an account?</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <p class="auth-link">
+              <a href="login.html">Sign in to Hive</a>
+            </p>
+
+          </form>
+        </div>
       </div>
+
     </div>
 
-    <!-- storage.js must be loaded before this script -->
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
   </body>

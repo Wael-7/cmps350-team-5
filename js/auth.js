@@ -220,9 +220,7 @@ if (registerForm) {
 
     if (!valid) return;
 
-    // Call storage.js
     const result = registerUser(username, email, password);
-
     if (!result.success) {
       globalError.textContent = result.error;
       globalError.classList.add("visible");
@@ -302,7 +300,6 @@ if (loginForm) {
 
     if (!valid) return;
 
-    // Call storage.js
     const result = loginUser(email, password);
 
     if (!result.success) {

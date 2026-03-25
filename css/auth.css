@@ -1,11 +1,8 @@
-/* --------------------------------------------------------------
-   auth.css — Styles for Register & Login pages
+
+
+/* ---------------------------------------------------------------
+   CSS VARIABLES
 --------------------------------------------------------------- */
-
-/* --------------------------------------------------------------
- CSS Variables for consistent theming
- ---------------------------------------------------------------*/
-
 :root {
   --bg: #f5f4f0;
   --surface: #ffffff;
@@ -14,14 +11,21 @@
   --text-secondary: #6b6860;
   --accent: #d4a853;
   --accent-hover: #c49843;
+  --panel-bg: #c17f24;
+  --panel-bg-dark: #a36a1a;
+  --panel-text: #ffffff;
+  --panel-text-soft: rgba(255, 255, 255, 0.75);
   --error: #c0392b;
   --error-bg: #fdf0ee;
   --success: #27ae60;
-  --input-focus: #1a1916;
   --radius: 10px;
   --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
 }
 
+/* ---------------------------------------------------------------
+   RESET
+--------------------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -30,8 +34,7 @@
   padding: 0;
 }
 
-html,
-body {
+html, body {
   height: 100%;
 }
 
@@ -39,87 +42,192 @@ body {
   font-family: "DM Sans", sans-serif;
   background-color: var(--bg);
   color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  padding: 24px 16px;
 }
 
-/* --------------------------------------------------------------
-   LAYOUT
+/* ---------------------------------------------------------------
+   PAGE LAYOUT — Split panel
 --------------------------------------------------------------- */
-.page-wrapper {
+.auth-page {
   display: grid;
   grid-template-columns: 1fr;
-  width: 100%;
-  max-width: 440px;
-  gap: 24px;
+  min-height: 100vh;
 }
 
-/* --------------------------------------------------------------
-   BRAND
+@media (min-width: 768px) {
+  .auth-page {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------
+   LEFT PANEL — Branded side
 --------------------------------------------------------------- */
-.brand {
+.auth-panel {
+  background-color: var(--panel-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
 }
 
-.brand-logo {
-  width: 44px;
-  height: 44px;
-  background-color: var(--text-primary);
-  border-radius: 12px;
+/* Honeycomb SVG background texture */
+.auth-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-4l24-14V18L28 4 4 18v30l24 14z' fill='%23ffffff' fill-opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 56px 100px;
+}
+
+/* Soft radial glow in center */
+.auth-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.panel-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+/* Logo mark */
+.panel-logo-mark {
+  width: 72px;
+  height: 72px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(4px);
 }
 
-.brand-logo svg {
-  width: 24px;
-  height: 24px;
-  fill: var(--accent);
+.panel-logo-mark svg {
+  width: 40px;
+  height: 40px;
+  fill: #ffffff;
 }
 
-.brand-name {
+.panel-brand-name {
   font-family: "DM Serif Display", serif;
-  font-size: 1.6rem;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
+  font-size: 3rem;
+  color: #ffffff;
+  letter-spacing: -1px;
+  line-height: 1;
 }
 
-/* --------------------------------------------------------------
-   CARD
+.panel-tagline {
+  font-size: 1rem;
+  color: var(--panel-text-soft);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+/* Decorative dots row */
+.panel-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.panel-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.panel-dots span:nth-child(2) {
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 8px;
+  height: 8px;
+}
+
+/* On mobile: panel becomes a slim top bar */
+@media (max-width: 767px) {
+  .auth-panel {
+    padding: 24px 20px;
+    min-height: unset;
+  }
+
+  .panel-logo-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .panel-logo-mark svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .panel-brand-name {
+    font-size: 1.8rem;
+  }
+
+  .panel-tagline {
+    font-size: 0.85rem;
+  }
+
+  .panel-dots {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   RIGHT PANEL — Form side
 --------------------------------------------------------------- */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 36px 32px;
-  box-shadow: var(--shadow);
+.auth-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background-color: var(--surface);
 }
 
-.card-header {
-  margin-bottom: 28px;
+.auth-form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
-.card-title {
-  font-size: 1.2rem;
+/* Form header */
+.form-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-title {
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  letter-spacing: -0.3px;
 }
 
-.card-subtitle {
+.form-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  font-weight: 400;
 }
 
-/* --------------------------------------------------------------
-   FORM
+/* ---------------------------------------------------------------
+   FORM ELEMENTS
 --------------------------------------------------------------- */
 .form {
   display: flex;
@@ -134,10 +242,10 @@ body {
 }
 
 .form-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
@@ -155,7 +263,7 @@ body {
   border: 1.5px solid var(--border);
   border-radius: 8px;
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-input::placeholder {
@@ -163,8 +271,9 @@ body {
 }
 
 .form-input:focus {
-  border-color: var(--input-focus);
+  border-color: var(--panel-bg);
   background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(193, 127, 36, 0.1);
 }
 
 .form-input.error {
@@ -176,7 +285,11 @@ body {
   border-color: var(--success);
 }
 
-/* Password toggle button */
+.form-input.has-toggle {
+  padding-right: 42px;
+}
+
+/* Password toggle */
 .toggle-password {
   position: absolute;
   right: 12px;
@@ -193,11 +306,7 @@ body {
 }
 
 .toggle-password:hover {
-  color: var(--text-primary);
-}
-
-.form-input.has-toggle {
-  padding-right: 40px;
+  color: var(--panel-bg);
 }
 
 /* Error message */
@@ -213,7 +322,22 @@ body {
   display: flex;
 }
 
-/* Password strength bar */
+/* Global error banner */
+.global-error {
+  display: none;
+  background: var(--error-bg);
+  border: 1px solid #f0c4be;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--error);
+}
+
+.global-error.visible {
+  display: block;
+}
+
+/* Password strength */
 .strength-bar-wrapper {
   display: none;
   flex-direction: column;
@@ -243,7 +367,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* --------------------------------------------------------------
+/* ---------------------------------------------------------------
    SUBMIT BUTTON
 --------------------------------------------------------------- */
 .btn-submit {
@@ -252,26 +376,27 @@ body {
   margin-top: 4px;
   font-family: "DM Sans", sans-serif;
   font-size: 0.925rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
-  background-color: var(--text-primary);
+  background-color: var(--panel-bg);
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
   letter-spacing: 0.2px;
 }
 
 .btn-submit:hover {
-  background-color: #2e2d2a;
+  background-color: var(--panel-bg-dark);
+  box-shadow: 0 4px 14px rgba(193, 127, 36, 0.35);
 }
 
 .btn-submit:active {
   transform: scale(0.99);
 }
 
-/* --------------------------------------------------------------
-   DIVIDER & LINK
+/* ---------------------------------------------------------------
+   DIVIDER & LINKS
 --------------------------------------------------------------- */
 .divider {
   display: flex;
@@ -299,42 +424,15 @@ body {
 }
 
 .auth-link a {
-  color: var(--text-primary);
-  font-weight: 500;
+  color: var(--panel-bg-dark);
+  font-weight: 600;
   text-decoration: none;
-  border-bottom: 1px solid var(--text-primary);
+  border-bottom: 1.5px solid var(--panel-bg);
   padding-bottom: 1px;
   transition: color 0.2s, border-color 0.2s;
 }
 
 .auth-link a:hover {
-  color: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
-
-/* --------------------------------------------------------------
-   GLOBAL ERROR BANNER
---------------------------------------------------------------- */
-.global-error {
-  display: none;
-  background: var(--error-bg);
-  border: 1px solid #f0c4be;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.85rem;
-  color: var(--error);
-  margin-bottom: 4px;
-}
-
-.global-error.visible {
-  display: block;
-}
-
-/* --------------------------------------------------------------
-   RESPONSIVE
---------------------------------------------------------------- */
-@media (max-width: 480px) {
-  .card {
-    padding: 28px 20px;
-  }
+  color: var(--panel-bg-dark);
+  border-color: var(--panel-bg-dark);
 }
