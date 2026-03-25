@@ -315,47 +315,4 @@ if (loginForm) {
     window.location.href = "feed.html";
   });
 
-  // Function to add a comment
-  function handleAddComment(postId) {
-    const commentInput = document.getElementById(`comment-input-${postId}`);
-    const commentContent = commentInput.value.trim();
-
-    if (!commentContent) {
-      alert("Comment cannot be empty!");
-      return;
-    }
-
-    const currentUser = getCurrentUser();  // Check if the user is logged in
-    if (!currentUser) {
-      alert("You must be logged in to comment!");
-      return;
-    }
-
-    const result = addComment(postId, currentUser.id, commentContent);
-
-    if (result.success) {
-      commentInput.value = "";  // Clear input after adding comment
-      loadPostComments(postId);  // Reload the comments for this post
-    } else {
-      alert(result.error);
-    }
-  }
-
-  // Function to display comments for the post
-  function loadPostComments(postId) {
-    const commentsList = document.getElementById(`comments-list-${postId}`);
-    const post = getPostById(postId);  // Get post data by ID
-
-    if (!post || !post.comments || post.comments.length === 0) {
-      commentsList.innerHTML = "<li>No comments yet.</li>";
-      return;
-    }
-
-    commentsList.innerHTML = "";  // Clear any existing comments
-    post.comments.forEach(c => {
-      const li = document.createElement("li");
-      li.textContent = `${c.content} — by ${getUserById(c.authorId)?.username || "Unknown"}`;
-      commentsList.appendChild(li);
-    });
-  }
 }
