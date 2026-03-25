@@ -4,50 +4,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Hive</title>
+    <title>Hive — Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/feed.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="navbar-center">
-      <button class="btn-logout">Logout</button>
+
+    <!-- Navbar (same as feed.html) -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="brand" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8.1v7.8L12 19.82 5 15.9V8.1L12 4.18z" />
+                    </svg>
+                </div>
+                <span class="brand-name">Hive</span>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-profile" id="navUserProfile">
+                <img class="user-avatar" id="navAvatar" src="" alt="Avatar" />
+                <span class="user-name" id="navUsername"></span>
+            </div>
+            <button class="btn-logout" id="navLogout">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Profile content -->
+    <div class="profile-container">
+
+        <!-- User Info -->
+        <div class="profile-header">
+            <img id="profilePic" class="profile-pic" alt="Profile Picture" />
+            <h2 id="username" class="profile-username"></h2>
+            <p id="bio" class="profile-bio"></p>
+
+            <div class="profile-stats">
+                <span id="followersCount" class="stat-count"></span> Followers
+                •
+                <span id="followingCount" class="stat-count"></span> Following
+            </div>
+
+            <div class="profile-buttons">
+                <button id="followBtn" class="btn-action" style="display:none;"></button>
+                <button id="editProfileBtn" class="btn-action" style="display:none;">Edit Profile</button>
+                <button id="backToFeedBtn" class="btn-back">← Back to Feed</button>
+            </div>
+        </div>
+
+        <!-- User Posts -->
+        <div class="posts-section">
+            <h3>Posts</h3>
+            <div id="userPosts"></div>
+        </div>
+
     </div>
-  </nav>
 
-  <div class="profile-container">
-
-    <!-- User Info -->
-    <div class="profile-header">
-      <img id="profilePic" class="profile-pic" />
-      <h2 id="username" class="profile-username"></h2>
-      <p id="bio" class="profile-bio"></p>
-
-      <div class="profile-stats">
-        <span id="followersCount" class="stat-count"></span> Followers
-        •
-        <span id="followingCount" class="stat-count"></span> Following
-      </div>
-
-      <div class="profile-buttons">
-        <button id="followBtn" class="btn-action"></button>
-        <button id="editProfileBtn" class="btn-action"></button>
-        <button id="backToFeedBtn" class="btn-back">← Back to Feed</button>
-      </div>
-    </div>
-
-    <!-- User Posts -->
-    <div class="posts-section">
-      <h3>Posts</h3>
-      <div id="userPosts"></div>
-    </div>
-
-  </div>
-
-  <script src="js/storage.js"></script>
-  <script src="js/profile.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/profile.js"></script>
 </body>
 
 </html>

@@ -1,207 +1,180 @@
-// profile.js — User profile and follow/edit logic
-
 initStorage();
+if (!isLoggedIn()) window.location.href = "login.html";
 
-const currentUser = isLoggedIn() ? getCurrentUser() : null;
-const isUserLoggedIn = currentUser !== null;
+const currentUser = getCurrentUser();
 
 const params = new URLSearchParams(window.location.search);
-let targetUserId = params.get("id");
+let targetUserId = params.get("id") || currentUser.id;
 
-if (!targetUserId) {
-  if (currentUser) {
-    targetUserId = currentUser.id;
-  } else {
+let targetUser = getUserById(targetUserId);
+
+// =============================================
+// NAVBAR
+// =============================================
+
+document.getElementById("navUsername").textContent = currentUser.username;
+const navAvatar = document.getElementById("navAvatar");
+navAvatar.src = currentUser.profilePicture
+    ? currentUser.profilePicture
+    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+
+const navUserProfile = document.getElementById("navUserProfile");
+navUserProfile.style.cursor = "pointer";
+navUserProfile.addEventListener("click", () => {
+    window.location.href = `profile.html?id=${currentUser.id}`;
+});
+
+document.getElementById("navLogout").addEventListener("click", () => {
+    logoutUser();
     window.location.href = "login.html";
-  }
-}
+});
 
-const targetUser = getUserById(targetUserId);
-
-function setNavbar() {
-  if (isUserLoggedIn) {
-    document.querySelector(".btn-logout").textContent = "Logout";
-    document.querySelector(".btn-logout").addEventListener("click", () => {
-      logoutUser();
-      window.location.href = "login.html";
-    });
-  } else {
-    document.querySelector(".btn-logout").textContent = "Login";
-    document.querySelector(".btn-logout").addEventListener("click", () => {
-      window.location.href = "login.html";
-    });
-  }
-}
+// =============================================
+// DISPLAY PROFILE
+// =============================================
 
 function displayUser() {
-  if (!targetUser) {
-    document.querySelector(".profile-container").innerHTML = "<p style='text-align:center;color:#999;'>User not found.</p>";
-    return;
-  }
-
-  document.getElementById("username").textContent = targetUser.username;
-  document.getElementById("bio").textContent = targetUser.bio || "No bio yet.";
-
-  const profilePic = document.getElementById("profilePic");
-  if (targetUser.profilePicture) {
-    profilePic.src = targetUser.profilePicture;
-  } else {
-    profilePic.src = `https://ui-avatars.com/api/?name=${targetUser.username}&background=d4a853&color=fff`;
-  }
-
-  document.getElementById("followersCount").textContent = targetUser.followers.length;
-  document.getElementById("followingCount").textContent = targetUser.following.length;
-
-  const followBtn = document.getElementById("followBtn");
-  const editBtn = document.getElementById("editProfileBtn");
-
-  if (!isUserLoggedIn || currentUser.id !== targetUser.id) {
-    // Show follow/unfollow only for other users (or not logged in)
-    editBtn.style.display = "none";
-    followBtn.style.display = "inline-block";
-
-    followBtn.disabled = false;
-    if (!isUserLoggedIn) {
-      followBtn.textContent = "Login to Follow";
-      followBtn.addEventListener("click", () => {
-        window.location.href = "login.html";
-      });
-    } else {
-      if (isFollowing(currentUser.id, targetUser.id)) {
-        followBtn.textContent = "Unfollow";
-        followBtn.classList.add("unfollow");
-      } else {
-        followBtn.textContent = "Follow";
-        followBtn.classList.remove("unfollow");
-      }
-
-      followBtn.addEventListener("click", () => {
-        if (currentUser.id === targetUser.id) return;
-
-        const result = isFollowing(currentUser.id, targetUser.id)
-          ? unfollowUser(currentUser.id, targetUser.id)
-          : followUser(currentUser.id, targetUser.id);
-
-        if (!result.success) {
-          alert(result.error);
-          return;
-        }
-
-        refreshProfile();
-      });
+    if (!targetUser) {
+        document.querySelector(".profile-container").innerHTML =
+            "<p style='text-align:center;color:#999;padding:40px;'>User not found.</p>";
+        return;
     }
-  } else {
-    // Own profile => show edit button and hide follow
-    followBtn.style.display = "none";
-    editBtn.style.display = "inline-block";
-    editBtn.textContent = "Edit Profile";
 
-    editBtn.addEventListener("click", () => {
-      const updatedUsername = prompt("Update username:", targetUser.username);
-      if (updatedUsername === null) return;
+    // Profile picture
+    const profilePic = document.getElementById("profilePic");
+    profilePic.src = targetUser.profilePicture
+        ? targetUser.profilePicture
+        : `https://ui-avatars.com/api/?name=${targetUser.username}&background=d4a853&color=fff`;
 
-      const usernameTrim = updatedUsername.trim();
-      if (!usernameTrim) {
-        alert("Username cannot be empty.");
-        return;
-      }
+    // Username, bio, stats
+    document.getElementById("username").textContent = targetUser.username;
+    document.getElementById("bio").textContent = targetUser.bio || "No bio yet.";
+    document.getElementById("followersCount").textContent = targetUser.followers.length;
+    document.getElementById("followingCount").textContent = targetUser.following.length;
 
-      const existingUser = getUserByUsername(usernameTrim);
-      if (existingUser && existingUser.id !== targetUser.id) {
-        alert("This username is already taken.");
-        return;
-      }
+    const followBtn   = document.getElementById("followBtn");
+    const editBtn     = document.getElementById("editProfileBtn");
 
-      const updatedBio = prompt("Update bio:", targetUser.bio || "");
-      if (updatedBio === null) return;
+    // Own profile
+    if (currentUser.id === targetUser.id) {
+        followBtn.style.display  = "none";
+        editBtn.style.display    = "inline-block";
 
-      const updatedProfilePicture = prompt("Profile picture URL (leave empty for default):", targetUser.profilePicture || "");
-      if (updatedProfilePicture === null) return;
+        // Remove old listeners by cloning
+        const newEditBtn = editBtn.cloneNode(true);
+        editBtn.parentNode.replaceChild(newEditBtn, editBtn);
 
-      const updateResult = updateUserProfile(targetUser.id, {
-        username: usernameTrim,
-        bio: updatedBio.trim(),
-        profilePicture: updatedProfilePicture.trim(),
-      });
+        newEditBtn.addEventListener("click", () => {
+            const updatedUsername = prompt("Update username:", targetUser.username);
+            if (updatedUsername === null) return;
+            const usernameTrim = updatedUsername.trim();
+            if (!usernameTrim) { alert("Username cannot be empty."); return; }
 
-      if (!updateResult.success) {
-        alert(updateResult.error);
-        return;
-      }
+            const existingUser = getUserByUsername(usernameTrim);
+            if (existingUser && existingUser.id !== targetUser.id) {
+                alert("This username is already taken.");
+                return;
+            }
 
-      // If we changed the username in current session, update navbar and storage
-      if (currentUser && currentUser.id === targetUser.id) {
-        // refresh local user data and currentUser value
-      }
+            const updatedBio = prompt("Update bio:", targetUser.bio || "");
+            if (updatedBio === null) return;
 
-      refreshProfile();
-      alert("Profile updated!");
-    });
-  }
+            const updatedPic = prompt("Profile picture URL (leave empty for default):", targetUser.profilePicture || "");
+            if (updatedPic === null) return;
 
-  renderUserPosts();
+            const result = updateUserProfile(targetUser.id, {
+                username: usernameTrim,
+                bio: updatedBio.trim(),
+                profilePicture: updatedPic.trim(),
+            });
+
+            if (!result.success) { alert(result.error); return; }
+            refreshProfile();
+            alert("Profile updated!");
+        });
+
+    } else {
+        // Another user's profile
+        editBtn.style.display   = "none";
+        followBtn.style.display = "inline-block";
+
+        const alreadyFollowing = isFollowing(currentUser.id, targetUser.id);
+        followBtn.textContent = alreadyFollowing ? "Unfollow" : "Follow";
+        followBtn.style.backgroundColor = alreadyFollowing ? "var(--text-secondary)" : "";
+
+        // Remove old listeners by cloning
+        const newFollowBtn = followBtn.cloneNode(true);
+        followBtn.parentNode.replaceChild(newFollowBtn, followBtn);
+
+        newFollowBtn.addEventListener("click", () => {
+            const result = isFollowing(currentUser.id, targetUser.id)
+                ? unfollowUser(currentUser.id, targetUser.id)
+                : followUser(currentUser.id, targetUser.id);
+
+            if (!result.success) { alert(result.error); return; }
+            refreshProfile();
+        });
+    }
+
+    renderUserPosts();
 }
+
+// =============================================
+// USER POSTS
+// =============================================
 
 function renderUserPosts() {
-  const postsContainer = document.getElementById("userPosts");
-  postsContainer.innerHTML = "";
+    const postsContainer = document.getElementById("userPosts");
+    postsContainer.innerHTML = "";
 
-  const posts = getPostsByUser(targetUser.id);
-  if (posts.length === 0) {
-    postsContainer.innerHTML = "<p>No posts yet.</p>";
-    return;
-  }
+    const posts = getPostsByUser(targetUser.id)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-  const sorted = posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  sorted.forEach((post) => {
-    const postCard = document.createElement("div");
-    postCard.className = "post-card";
+    if (posts.length === 0) {
+        postsContainer.innerHTML = "<p>No posts yet.</p>";
+        return;
+    }
 
-    const content = document.createElement("p");
-    content.textContent = post.content;
+    posts.forEach((post) => {
+        const postCard = document.createElement("div");
+        postCard.className = "post-card";
+        postCard.addEventListener("click", () => {
+            window.location.href = `post.html?id=${post.id}`;
+        });
 
-    const meta = document.createElement("div");
-    meta.className = "post-meta";
-    meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} likes • ${post.comments.length} comments`;
+        const content = document.createElement("p");
+        content.textContent = post.content;
 
-    postCard.appendChild(content);
-    postCard.appendChild(meta);
-    postCard.addEventListener("click", () => {
-      window.location.href = `post.html?id=${post.id}`;
+        const meta = document.createElement("div");
+        meta.className = "post-meta";
+        meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
+
+        postCard.appendChild(content);
+        postCard.appendChild(meta);
+        postsContainer.appendChild(postCard);
     });
-
-    postsContainer.appendChild(postCard);
-  });
 }
+
+// =============================================
+// REFRESH
+// =============================================
 
 function refreshProfile() {
-  // refresh data from storage
-  const updatedUser = getUserById(targetUser.id);
-  if (!updatedUser) return;
-
-  // update targetUser object
-  Object.assign(targetUser, updatedUser);
-
-  if (currentUser && currentUser.id === targetUser.id) {
-    // refresh current user reference for nav and local state
-    const latest = getUserById(currentUser.id);
-    if (latest) {
-      currentUser.username = latest.username;
-      currentUser.bio = latest.bio;
-      currentUser.profilePicture = latest.profilePicture;
-    }
-  }
-
-  displayUser();
+    targetUser = getUserById(targetUserId);
+    if (!targetUser) return;
+    displayUser();
 }
 
-setNavbar();
-displayUser();
+// =============================================
+// BACK BUTTON
+// =============================================
 
-// Back to Feed button
-const backBtn = document.getElementById("backToFeedBtn");
-if (backBtn) {
-  backBtn.addEventListener("click", () => {
+document.getElementById("backToFeedBtn").addEventListener("click", () => {
     window.location.href = "feed.html";
-  });
-}
+});
+
+// =============================================
+// INIT
+// =============================================
+
+displayUser();

@@ -1,70 +1,46 @@
-// Initializing and checking user
+// =============================================
+// feed.js — Feed Page Logic
+// Hive Social Media Platform — CMPS 350
+// =============================================
 
 initStorage();
-
-const currentUser = isLoggedIn() ? getCurrentUser() : null;
-const isUserLoggedIn = currentUser !== null;
 if (!isLoggedIn()) window.location.href = "login.html";
 
-//Navbar setup
+const currentUser = getCurrentUser();
 
-if (isUserLoggedIn) {
-    const userNameEl = document.querySelector(".user-name");
-    const avatar = document.querySelector(".user-avatar");
+// =============================================
+// NAVBAR
+// =============================================
 
-    userNameEl.textContent = currentUser.username;
-    if (currentUser.profilePicture) {
-        avatar.src = currentUser.profilePicture;
-    } else {
-        avatar.src =
-            `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
-    }
+document.querySelector(".user-name").textContent = currentUser.username;
+const navAvatar = document.querySelector(".user-avatar");
+navAvatar.src = currentUser.profilePicture
+    ? currentUser.profilePicture
+    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
 
-    // Navigation: navbar user profile click leads to profile page
-    const userProfileContainer = document.querySelector(".user-profile");
-    userProfileContainer.style.cursor = "pointer";
-    userProfileContainer.addEventListener("click", () => {
-        window.location.href = `profile.html?id=${currentUser.id}`;
-    });
-
-    document.querySelector(".btn-logout").addEventListener("click", () => {
-        logoutUser();
-        window.location.href = "login.html";
-    });
-} else {
-    document.querySelector(".user-name").textContent = "Guest";
-    document.querySelector(".btn-logout").textContent = "Login";
-    document.querySelector(".btn-logout").addEventListener("click", () => {
-        window.location.href = "login.html";
-    });
-}
-
-// Floating button setup
-
-const floatingBtn = document.getElementById("fbCreatePost");
-if (!isUserLoggedIn) {
-    floatingBtn.disabled = true;
-    floatingBtn.style.opacity = "0.5";
-    floatingBtn.title = "Please log in to create a post";
-}
-
-floatingBtn.addEventListener("click", () => {
-    if (!isUserLoggedIn) {
-        alert("Please log in to create a post.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    document.getElementById("createPostModal").classList.remove("hidden");
+const userProfileContainer = document.querySelector(".user-profile");
+userProfileContainer.style.cursor = "pointer";
+userProfileContainer.addEventListener("click", () => {
+    window.location.href = `profile.html?id=${currentUser.id}`;
 });
 
-// Modal setup
+document.querySelector(".btn-logout").addEventListener("click", () => {
+    logoutUser();
+    window.location.href = "login.html";
+});
 
+// =============================================
+// FLOATING BUTTON + MODAL
+// =============================================
 
 const modal = document.getElementById("createPostModal");
-const floatingButton = document.getElementById("fbCreatePost");
+const floatingBtn = document.getElementById("fbCreatePost");
 const closeButton = document.querySelector(".close");
 const cancelBtn = document.getElementById("cancelPost");
+
+floatingBtn.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+});
 
 closeButton.addEventListener("click", () => {
     modal.classList.add("hidden");
@@ -80,26 +56,26 @@ window.addEventListener("click", (e) => {
     }
 });
 
-
-// Feed setup
+// =============================================
+// FEED
+// =============================================
 
 function loadFeed() {
     const feedContainer = document.getElementById("feed");
     feedContainer.innerHTML = "";
 
-    const allPosts = isUserLoggedIn ? getFeedPosts(currentUser.id) : getPosts();
+    const posts = getFeedPosts(currentUser.id);
 
-    if (!isUserLoggedIn) {
-        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>Please log in to see your feed.</p>";
+    if (posts.length === 0) {
+        feedContainer.innerHTML = `
+            <div style="text-align:center; color:var(--text-secondary); padding:48px 20px;">
+                <p style="font-size:1rem; margin-bottom:8px;">Your feed is empty.</p>
+                <p style="font-size:0.875rem;">Follow people from the sidebar to see their posts here.</p>
+            </div>`;
         return;
     }
 
-    if (allPosts.length === 0) {
-        feedContainer.innerHTML = "<p style='text-align: center; color: #999;'>No posts from users you follow yet. Follow people to fill your feed.</p>";
-        return;
-    }
-
-    allPosts.forEach((post) => {
+    posts.forEach((post) => {
         const postCard = createPostCard(post);
         feedContainer.appendChild(postCard);
     });
@@ -112,28 +88,20 @@ function createPostCard(post) {
     card.className = "card";
     card.dataset.postId = post.id;
 
+    // ---- Header ----
     const header = document.createElement("div");
     header.className = "post-header";
 
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "btn-delete";
-    deleteBtn.innerHTML = "🗑️"; // temporary icon
-    deleteBtn.style.display = isUserLoggedIn && post.authorId === currentUser.id ? "block" : "none";
-
-    deleteBtn.addEventListener("click", () => {
-        if (confirm("Are you sure you want to delete this post?")) {
-            const result = deletePost(post.id, currentUser.id);
-            if (result.success) {
-                loadFeed();  // Re-render feed
-            } else {
-                alert("Error: " + result.error);
-            }
-        }
+    const authorAvatar = document.createElement("img");
+    authorAvatar.className = "author-avatar";
+    authorAvatar.src = author && author.profilePicture
+        ? author.profilePicture
+        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
+    authorAvatar.style.cursor = "pointer";
+    authorAvatar.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (author) window.location.href = `profile.html?id=${author.id}`;
     });
-
-    header.appendChild(deleteBtn);
-
 
     const authorInfo = document.createElement("div");
     authorInfo.className = "author-info";
@@ -144,101 +112,236 @@ function createPostCard(post) {
     authorName.style.cursor = "pointer";
     authorName.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (author) {
-            window.location.href = `profile.html?id=${author.id}`;
-        }
+        if (author) window.location.href = `profile.html?id=${author.id}`;
     });
-
-    const authorAvatar = document.createElement("img");
-    authorAvatar.className = "author-avatar";
-    authorAvatar.style.cursor = "pointer";
-    authorAvatar.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (author) {
-            window.location.href = `profile.html?id=${author.id}`;
-        }
-    });
-
-    if (author && author.profilePicture) {
-        authorAvatar.src = author.profilePicture;
-    } else {
-        authorAvatar.src = `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
-    }
 
     const timestamp = document.createElement("span");
     timestamp.className = "post-timestamp";
     timestamp.textContent = formatTimestamp(post.timestamp);
 
     authorInfo.appendChild(authorName);
+    authorInfo.appendChild(timestamp);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn-delete";
+    deleteBtn.innerHTML = "🗑️";
+    deleteBtn.style.display = post.authorId === currentUser.id ? "block" : "none";
+    deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm("Delete this post?")) {
+            const result = deletePost(post.id, currentUser.id);
+            if (result.success) loadFeed();
+            else alert("Error: " + result.error);
+        }
+    });
+
     header.appendChild(authorAvatar);
     header.appendChild(authorInfo);
-    header.appendChild(timestamp);
+    header.appendChild(deleteBtn);
 
+    // ---- Content ----
     const content = document.createElement("p");
     content.className = "post-content";
     content.textContent = post.content;
 
+    // ---- Footer: Like + Comment toggle ----
     const footer = document.createElement("div");
     footer.className = "post-footer";
 
     const likeBtn = document.createElement("button");
     likeBtn.className = "like-btn";
+    if (hasLiked(post.id, currentUser.id)) likeBtn.classList.add("liked");
     const likeCount = post.likes.length;
-    likeBtn.innerHTML = `👍 ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}`;
-    likeBtn.disabled = !isUserLoggedIn;
-
-    if (!isUserLoggedIn) {
-        likeBtn.title = "Login to like";
-        likeBtn.style.opacity = "0.5";
-        likeBtn.addEventListener("click", () => {
-            alert("Please login to like posts");
-            window.location.href = "login.html";
-        });
-    } else {
-        likeBtn.addEventListener("click", () => {
-            const result = toggleLike(post.id, currentUser.id);
-            if (result.success) {
-                loadFeed();
+    likeBtn.innerHTML = `❤️ ${likeCount} ${likeCount === 1 ? "like" : "likes"}`;
+    likeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const result = toggleLike(post.id, currentUser.id);
+        if (result.success) {
+            // Update like button in place without full reload
+            const updatedPost = getPostById(post.id);
+            const count = updatedPost.likes.length;
+            likeBtn.innerHTML = `❤️ ${count} ${count === 1 ? "like" : "likes"}`;
+            if (hasLiked(post.id, currentUser.id)) {
+                likeBtn.classList.add("liked");
+            } else {
+                likeBtn.classList.remove("liked");
             }
-        });
-    }
+        }
+    });
 
+    const commentCount = post.comments.length;
+    const toggleCommentsBtn = document.createElement("button");
+    toggleCommentsBtn.className = "btn-toggle-comments";
+    toggleCommentsBtn.innerHTML = `💬 ${commentCount} ${commentCount === 1 ? "comment" : "comments"}`;
+    toggleCommentsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const commentsSection = card.querySelector(".inline-comments");
+        commentsSection.classList.toggle("open");
+        toggleCommentsBtn.classList.toggle("active");
+    });
 
     footer.appendChild(likeBtn);
+    footer.appendChild(toggleCommentsBtn);
+
+    // ---- Inline Comments Section ----
+    const inlineComments = document.createElement("div");
+    inlineComments.className = "inline-comments";
+    renderInlineComments(inlineComments, post.id, toggleCommentsBtn);
 
     card.appendChild(header);
     card.appendChild(content);
     card.appendChild(footer);
-
-    card.addEventListener("click", (e) => {
-        // Don't navigate if clicking the delete button or like button
-        if (e.target.closest(".btn-delete")) return;
-        if (e.target.closest(".like-btn")) return;
-
-        window.location.href = `post.html?id=${post.id}`;
-    });
+    card.appendChild(inlineComments);
 
     return card;
 }
 
-loadFeed();
-loadUserList();
+function renderInlineComments(container, postId, toggleBtn) {
+    container.innerHTML = "";
 
-// User discovery setup
+    const post = getPostById(postId);
+    if (!post) return;
+
+    // ---- Add comment input row ----
+    const inputRow = document.createElement("div");
+    inputRow.className = "comment-input-row";
+
+    const inputAvatar = document.createElement("img");
+    inputAvatar.className = "comment-input-avatar";
+    inputAvatar.src = currentUser.profilePicture
+        ? currentUser.profilePicture
+        : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.className = "comment-input-wrapper";
+
+    const textarea = document.createElement("textarea");
+    textarea.placeholder = "Write a comment...";
+    textarea.addEventListener("click", (e) => e.stopPropagation());
+    textarea.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.ctrlKey) submitComment();
+    });
+
+    const submitBtn = document.createElement("button");
+    submitBtn.className = "btn-submit-inline-comment";
+    submitBtn.textContent = "Post";
+    submitBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        submitComment();
+    });
+
+    function submitComment() {
+        const content = textarea.value.trim();
+        if (!content) { textarea.focus(); return; }
+
+        const result = addComment(postId, currentUser.id, content);
+        if (result.success) {
+            textarea.value = "";
+            // Update comment count on toggle button
+            const updatedPost = getPostById(postId);
+            const count = updatedPost.comments.length;
+            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
+            // Re-render comments list
+            renderInlineComments(container, postId, toggleBtn);
+            container.classList.add("open");
+        } else {
+            alert("Error: " + result.error);
+        }
+    }
+
+    inputWrapper.appendChild(textarea);
+    inputWrapper.appendChild(submitBtn);
+    inputRow.appendChild(inputAvatar);
+    inputRow.appendChild(inputWrapper);
+
+    // ---- Comments list ----
+    const commentsList = document.createElement("div");
+    commentsList.className = "inline-comments-list";
+
+    if (post.comments.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "no-comments-msg";
+        empty.textContent = "No comments yet. Be the first!";
+        commentsList.appendChild(empty);
+    } else {
+        post.comments.forEach((comment) => {
+            const commentAuthor = getUserById(comment.authorId);
+            const item = document.createElement("div");
+            item.className = "inline-comment-item";
+
+            const commentAvatar = document.createElement("img");
+            commentAvatar.className = "inline-comment-avatar";
+            commentAvatar.src = commentAuthor && commentAuthor.profilePicture
+                ? commentAuthor.profilePicture
+                : `https://ui-avatars.com/api/?name=${commentAuthor ? commentAuthor.username : "Unknown"}&background=d4a853&color=fff`;
+
+            const bubble = document.createElement("div");
+            bubble.className = "inline-comment-bubble";
+
+            const commentHeader = document.createElement("div");
+            commentHeader.className = "inline-comment-header";
+
+            const commentAuthorName = document.createElement("span");
+            commentAuthorName.className = "inline-comment-author";
+            commentAuthorName.textContent = commentAuthor ? commentAuthor.username : "Unknown";
+
+            const commentTime = document.createElement("span");
+            commentTime.className = "inline-comment-time";
+            commentTime.textContent = formatTimestamp(comment.timestamp);
+
+            commentHeader.appendChild(commentAuthorName);
+            commentHeader.appendChild(commentTime);
+
+            const commentText = document.createElement("p");
+            commentText.className = "inline-comment-text";
+            commentText.textContent = comment.content;
+
+            bubble.appendChild(commentHeader);
+            bubble.appendChild(commentText);
+
+            // Delete comment button (only for comment author)
+            if (comment.authorId === currentUser.id) {
+                const deleteCommentBtn = document.createElement("button");
+                deleteCommentBtn.className = "btn-delete-inline-comment";
+                deleteCommentBtn.textContent = "🗑️";
+                deleteCommentBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (confirm("Delete this comment?")) {
+                        const result = deleteComment(postId, comment.id, currentUser.id);
+                        if (result.success) {
+                            const updatedPost = getPostById(postId);
+                            const count = updatedPost.comments.length;
+                            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
+                            renderInlineComments(container, postId, toggleBtn);
+                            container.classList.add("open");
+                        }
+                    }
+                });
+                commentHeader.appendChild(deleteCommentBtn);
+            }
+
+            item.appendChild(commentAvatar);
+            item.appendChild(bubble);
+            commentsList.appendChild(item);
+        });
+    }
+
+    container.appendChild(inputRow);
+    container.appendChild(commentsList);
+}
+
+// =============================================
+// DISCOVER USERS SIDEBAR
+// =============================================
 
 function loadUserList() {
     const userListContainer = document.getElementById("userList");
     userListContainer.innerHTML = "";
 
-    if (!isUserLoggedIn) {
-        userListContainer.innerHTML = "<p>Please log in to discover users.</p>";
-        return;
-    }
-
     const allUsers = getUsers().filter(u => u.id !== currentUser.id);
 
     if (allUsers.length === 0) {
-        userListContainer.innerHTML = "<p>No other users yet. Invite friends to join!</p>";
+        userListContainer.innerHTML = `<p style="font-size:0.82rem; color:var(--text-secondary); text-align:center; padding:12px 0;">No other users yet.</p>`;
         return;
     }
 
@@ -251,7 +354,9 @@ function loadUserList() {
 
         const avatar = document.createElement("img");
         avatar.className = "user-avatar-small";
-        avatar.src = user.profilePicture || `https://ui-avatars.com/api/?name=${user.username}&background=d4a853&color=fff`;
+        avatar.src = user.profilePicture
+            ? user.profilePicture
+            : `https://ui-avatars.com/api/?name=${user.username}&background=d4a853&color=fff`;
 
         const name = document.createElement("span");
         name.className = "user-name-small";
@@ -265,16 +370,18 @@ function loadUserList() {
         userInfo.appendChild(name);
 
         const followBtn = document.createElement("button");
-        followBtn.className = "btn-follow";
-        followBtn.textContent = isFollowing(currentUser.id, user.id) ? "Unfollow" : "Follow";
+        const following = isFollowing(currentUser.id, user.id);
+        followBtn.className = following ? "btn-follow following" : "btn-follow";
+        followBtn.textContent = following ? "Unfollow" : "Follow";
+
         followBtn.addEventListener("click", () => {
-            const result = isFollowing(currentUser.id, user.id)
+            const result = following
                 ? unfollowUser(currentUser.id, user.id)
                 : followUser(currentUser.id, user.id);
 
             if (result.success) {
-                loadUserList(); // Refresh list
-                loadFeed(); // Refresh feed to show new posts
+                loadUserList();
+                loadFeed();
             } else {
                 alert(result.error);
             }
@@ -282,10 +389,13 @@ function loadUserList() {
 
         userCard.appendChild(userInfo);
         userCard.appendChild(followBtn);
-
         userListContainer.appendChild(userCard);
     });
 }
+
+// =============================================
+// CREATE POST
+// =============================================
 
 const createPostForm = document.getElementById("createPostForm");
 const postContentInput = document.getElementById("postContent");
@@ -293,11 +403,8 @@ const postContentInput = document.getElementById("postContent");
 createPostForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const content = postContentInput.value.trim();
+    if (!content) { postContentInput.focus(); return; }
 
-    if (!content) {
-        alert("Post cannot be empty.");
-        return;
-    }
     const result = createPost(currentUser.id, content);
     if (result.success) {
         createPostForm.reset();
@@ -307,3 +414,10 @@ createPostForm.addEventListener("submit", (e) => {
         alert("Error: " + result.error);
     }
 });
+
+// =============================================
+// INIT
+// =============================================
+
+loadFeed();
+loadUserList();

@@ -1,3 +1,7 @@
+/* ---------------------------------------------------------------
+   feed.css — Feed Page Styles
+--------------------------------------------------------------- */
+
 :root {
     --bg: #f5f4f0;
     --surface: #ffffff;
@@ -6,15 +10,13 @@
     --text-secondary: #6b6860;
     --accent: #d4a853;
     --accent-hover: #c49843;
+    --panel-bg: #c17f24;
     --error: #c0392b;
     --error-bg: #fdf0ee;
     --success: #27ae60;
-    --input-focus: #1a1916;
     --radius: 10px;
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
-
-/* Mobile first */
 
 *,
 *::before,
@@ -24,35 +26,33 @@
     padding: 0;
 }
 
-html,
-body {
+html, body {
     height: 100%;
 }
 
 body {
-    width: 100%;
-    max-width: 100%;
     font-family: "DM Sans", sans-serif;
     background-color: var(--bg);
     color: var(--text-primary);
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
-    padding: 0;
 }
+
+/* ---------------------------------------------------------------
+   NAVBAR
+--------------------------------------------------------------- */
 
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 50px;
+    height: 56px;
     background-color: var(--surface);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 0 20px;
     z-index: 100;
     box-shadow: var(--shadow);
 }
@@ -60,77 +60,87 @@ body {
 .navbar-left {
     display: flex;
     align-items: center;
-    gap: 6px;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .brand-logo {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     background-color: var(--text-primary);
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .brand-logo svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     fill: var(--accent);
 }
 
 .brand-name {
     font-family: "DM Serif Display", serif;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 1.3rem;
     color: var(--text-primary);
+    letter-spacing: -0.3px;
 }
 
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.user-profile:hover {
+    background-color: var(--bg);
 }
 
 .user-avatar {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--accent);
 }
 
 .user-name {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-primary);
-    max-width: 80px;
+    max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .btn-logout {
-    padding: 4px 10px;
-    background-color: var(--accent);
+    padding: 6px 14px;
+    background-color: var(--panel-bg);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 600;
+    font-family: "DM Sans", sans-serif;
     transition: background-color 0.2s;
 }
 
@@ -138,99 +148,71 @@ body {
     background-color: var(--accent-hover);
 }
 
-/* media queries */
+/* ---------------------------------------------------------------
+   MAIN LAYOUT — Two column
+--------------------------------------------------------------- */
 
-@media (min-width: 640px) {
-    .navbar {
-        height: 60px;
-        padding: 0 24px;
-    }
+.main-layout {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 24px 16px;
+}
 
-    .brand-logo {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-    }
-
-    .brand-logo svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .brand-name {
-        font-size: 1.4rem;
-    }
-
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-    }
-
-    .user-name {
-        font-size: 0.9rem;
-        max-width: none;
-    }
-
-    .btn-logout {
-        padding: 6px 12px;
-        font-size: 0.85rem;
+@media (min-width: 900px) {
+    .main-layout {
+        grid-template-columns: 1fr 300px;
+        margin-top: 56px;
+        align-items: start;
     }
 }
 
-/* feed container */
-.feed-container {
-    margin-top: 70px;
-    padding: 16px 20px;
+/* ---------------------------------------------------------------
+   FEED COLUMN
+--------------------------------------------------------------- */
+
+.feed-column {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    width: 100%;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
+    min-width: 0; /* prevents overflow */
 }
 
 #feed {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    width: 100%;
 }
 
-/*post cards */
+/* ---------------------------------------------------------------
+   POST CARD
+--------------------------------------------------------------- */
+
 .card {
     background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 20px;
     box-shadow: var(--shadow);
-    transition: all 0.3s ease;
+    transition: box-shadow 0.2s, border-color 0.2s;
     cursor: pointer;
     position: relative;
 }
 
 .card:hover {
-    background-color: var(--surface);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
     border-color: var(--accent);
 }
 
-
 .post-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-    position: relative;
-}
-
-.author-info {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex: 1;
+    margin-bottom: 14px;
 }
 
 .author-avatar {
@@ -239,42 +221,43 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--accent);
-    transition: border-color 0.3s ease;
+    flex-shrink: 0;
 }
 
-.author-avatar:hover {
-    border-color: var(--accent-hover);
+.author-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 1px;
 }
 
 .author-name {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
-    transition: color 0.3s ease;
+    transition: color 0.2s;
 }
 
 .author-name:hover {
-    color: var(--accent);
+    color: var(--panel-bg);
 }
 
 .post-timestamp {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-top: 2px;
 }
 
 .btn-delete {
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1rem;
     cursor: pointer;
-    padding: 4px;
+    padding: 4px 6px;
     border-radius: 4px;
-    transition: background-color 0.3s ease;
-    position: absolute;
-    top: 12px;
-    right: 0;
+    color: var(--text-secondary);
+    transition: background 0.2s;
+    flex-shrink: 0;
 }
 
 .btn-delete:hover {
@@ -283,182 +266,378 @@ body {
 }
 
 .post-content {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 0.975rem;
+    line-height: 1.65;
     color: var(--text-primary);
-    margin: 16px 0;
+    margin-bottom: 16px;
     word-wrap: break-word;
 }
 
+/* Post footer — like + comment toggle */
 .post-footer {
     display: flex;
-    gap: 12px;
-    margin-top: 20px;
     align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
 }
 
 .like-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 16px;
+    padding: 7px 14px;
     background-color: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 24px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
+    font-family: "DM Sans", sans-serif;
     color: var(--text-primary);
-    transition: all 0.3s ease;
-    min-width: 80px;
-    justify-content: center;
+    transition: all 0.2s;
 }
 
 .like-btn:hover:not(:disabled) {
-    background-color: var(--accent);
-    color: white;
-    border-color: var(--accent);
-    transform: scale(1.05);
+    background-color: #fdf0ee;
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.like-btn.liked {
+    background-color: #fdf0ee;
+    border-color: #e74c3c;
+    color: #e74c3c;
 }
 
 .like-btn:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
-/* media queries */
+.btn-toggle-comments {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: "DM Sans", sans-serif;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
 
-@media (min-width: 640px) {
-    .navbar {
-        height: 60px;
-        padding: 0 24px;
-    }
+.btn-toggle-comments:hover {
+    background-color: var(--surface);
+    border-color: var(--panel-bg);
+    color: var(--panel-bg);
+}
 
-    .brand-logo {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-    }
+.btn-toggle-comments.active {
+    background-color: var(--surface);
+    border-color: var(--panel-bg);
+    color: var(--panel-bg);
+}
 
-    .brand-logo svg {
-        width: 18px;
-        height: 18px;
-    }
+/* ---------------------------------------------------------------
+   INLINE COMMENTS SECTION
+--------------------------------------------------------------- */
 
-    .brand-name {
-        font-size: 1.4rem;
-    }
+.inline-comments {
+    display: none;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+}
 
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-    }
+.inline-comments.open {
+    display: block;
+}
 
-    .user-name {
-        font-size: 0.9rem;
-        max-width: none;
-    }
+/* Add comment input */
+.comment-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
 
-    .btn-logout {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
+.comment-input-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
 
-    .feed-container {
-        margin-top: 80px;
-        padding: 20px;
-    }
+.comment-input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-    .card {
-        padding: 24px;
-        border-radius: 16px;
-    }
+.comment-input-wrapper textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background-color: var(--bg);
+    resize: none;
+    min-height: 60px;
+    outline: none;
+    transition: border-color 0.2s;
+}
 
-    .post-header {
-        margin-bottom: 20px;
-    }
+.comment-input-wrapper textarea::placeholder {
+    color: #b5b3ac;
+}
 
-    .author-avatar {
-        width: 48px;
-        height: 48px;
-    }
+.comment-input-wrapper textarea:focus {
+    border-color: var(--panel-bg);
+    background-color: var(--surface);
+    box-shadow: 0 0 0 3px rgba(193, 127, 36, 0.08);
+}
 
-    .author-name {
-        font-size: 1.1rem;
-        font-weight: 700;
-    }
+.btn-submit-inline-comment {
+    align-self: flex-end;
+    padding: 7px 16px;
+    background-color: var(--panel-bg);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
 
-    .post-timestamp {
-        font-size: 0.85rem;
-    }
+.btn-submit-inline-comment:hover {
+    background-color: var(--accent-hover);
+}
 
-    .post-content {
-        font-size: 1.1rem;
-        line-height: 1.7;
-        margin: 20px 0;
-    }
+/* Comments list */
+.inline-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    .post-footer {
-        margin-top: 24px;
-    }
+.inline-comment-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
 
-    .like-btn {
-        padding: 12px 20px;
-        font-size: 1rem;
-        font-weight: 600;
-    }
+.inline-comment-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
 
-    .discover-container {
-        padding: 32px;
-    }
+.inline-comment-bubble {
+    flex: 1;
+    background-color: var(--bg);
+    border-radius: 8px;
+    padding: 8px 12px;
+    position: relative;
+}
 
-    .discover-container h2 {
-        font-size: 1.6rem;
-        margin-bottom: 24px;
-    }
+.inline-comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
 
-    #userList {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 20px;
-    }
+.inline-comment-author {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
 
-    .user-card {
-        padding: 20px 24px;
-    }
+.inline-comment-time {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
 
-    .user-avatar-small {
-        width: 56px;
-        height: 56px;
-    }
+.inline-comment-text {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    word-wrap: break-word;
+}
 
-    .user-name-small {
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
+.btn-delete-inline-comment {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
 
-    .btn-follow {
-        padding: 10px 20px;
-        font-size: 1rem;
-        min-width: 90px;
+.btn-delete-inline-comment:hover {
+    background-color: var(--error-bg);
+    color: var(--error);
+}
+
+.no-comments-msg {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 8px 0;
+}
+
+/* ---------------------------------------------------------------
+   SIDEBAR
+--------------------------------------------------------------- */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 900px) {
+    .sidebar {
+        position: sticky;
+        top: 76px; /* navbar height + gap */
     }
 }
 
-/* floating button  */
+.sidebar-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-title {
+    font-family: "DM Serif Display", serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+#userList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+}
+
+.user-card:hover {
+    background-color: #edeae3;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-avatar-small {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+}
+
+.user-name-small {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-follow {
+    padding: 5px 12px;
+    background-color: var(--panel-bg);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: "DM Sans", sans-serif;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.btn-follow:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-follow.following {
+    background-color: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.btn-follow.following:hover {
+    background-color: var(--error-bg);
+    color: var(--error);
+    border-color: var(--error);
+}
+
+/* ---------------------------------------------------------------
+   FLOATING BUTTON
+--------------------------------------------------------------- */
 
 .floatingButton {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
+    bottom: 28px;
+    right: 28px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background-color: var(--accent);
+    background-color: var(--panel-bg);
     color: white;
     border: none;
     font-size: 1.8rem;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(212, 168, 83, 0.4);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(193, 127, 36, 0.4);
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -467,8 +646,8 @@ body {
 
 .floatingButton:hover:not(:disabled) {
     background-color: var(--accent-hover);
-    box-shadow: 0 6px 20px rgba(212, 168, 83, 0.6);
-    transform: scale(1.1);
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(193, 127, 36, 0.5);
 }
 
 .floatingButton:disabled {
@@ -476,16 +655,15 @@ body {
     cursor: not-allowed;
 }
 
-/*modal*/
+/* ---------------------------------------------------------------
+   CREATE POST MODAL
+--------------------------------------------------------------- */
 
 .modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
     z-index: 200;
     align-items: center;
     justify-content: center;
@@ -497,258 +675,123 @@ body {
 }
 
 .modal.hidden {
-    display: none;
-}
-
-/* Discover Users */
-
-.discover-container {
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 24px;
-    background-color: var(--surface);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
-
-.discover-container h2 {
-    margin-bottom: 20px;
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-align: center;
-    font-family: "DM Serif Display", serif;
-}
-
-#userList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-}
-
-.user-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    background-color: var(--bg);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.user-card:hover {
-    background-color: var(--surface);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex: 1;
-}
-
-.user-avatar-small {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--accent);
-}
-
-.user-name-small {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-.btn-follow {
-    background-color: var(--accent);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 24px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    min-width: 80px;
-}
-
-.btn-follow:hover {
-    background-color: var(--accent-hover);
-    transform: scale(1.05);
+    display: none !important;
 }
 
 .modal-content {
     background-color: var(--surface);
     width: 90%;
-    max-width: 500px;
+    max-width: 480px;
     border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    max-height: 80vh;
-    overflow-y: auto;
+    padding: 28px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.15);
     position: relative;
 }
 
-.modal-content .close {
+.close {
     position: absolute;
     top: 16px;
     right: 16px;
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border: none;
     background: none;
-    padding: 4px;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
 
-.modal-content .close:hover {
-    color: var(--error);
+.close:hover {
     background-color: var(--error-bg);
+    color: var(--error);
+}
+
+.modal-title {
+    font-family: "DM Serif Display", serif;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 16px;
 }
 
 #createPostForm {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 14px;
 }
 
 #createPostForm textarea {
     width: 100%;
     min-height: 120px;
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.5;
-    resize: vertical;
-    transition: border-color 0.3s ease;
-}
-
-#createPostForm textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.1);
-}
-
-#createPostForm button {
-    align-self: flex-end;
-    padding: 12px 24px;
-    background-color: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#createPostForm button:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(212, 168, 83, 0.3);
-}
-
-#createPostForm textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     font-family: "DM Sans", sans-serif;
     font-size: 0.95rem;
-    resize: vertical;
-    min-height: 100px;
     color: var(--text-primary);
     background-color: var(--bg);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
 #createPostForm textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.1);
+    border-color: var(--panel-bg);
+    box-shadow: 0 0 0 3px rgba(193, 127, 36, 0.1);
+    background-color: var(--surface);
+}
+
+#createPostForm textarea::placeholder {
+    color: #b5b3ac;
 }
 
 .modal-actions {
     display: flex;
+    justify-content: flex-end;
     gap: 10px;
 }
 
-.btn-Post,
-.btn-Cancel {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-Post {
-    background-color: var(--accent);
-    color: white;
-}
-
-.btn-Post:hover {
-    background-color: var(--accent-hover);
-}
-
-.btn-Cancel {
+.btn-cancel-modal {
+    padding: 9px 18px;
     background-color: var(--bg);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
-.btn-Cancel:hover {
+.btn-cancel-modal:hover {
     background-color: var(--border);
 }
 
-/* media queries */
-
-@media (min-width: 640px) {
-    .modal {
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-content {
-        width: 90%;
-        max-width: 450px;
-        border-radius: 12px;
-        max-height: 80vh;
-    }
-
-    #createPostForm textarea {
-        min-height: 120px;
-    }
-
-    .floatingButton {
-        bottom: 30px;
-        width: 56px;
-        height: 56px;
-        font-size: 2rem;
-    }
+.btn-post-modal {
+    padding: 9px 22px;
+    background-color: var(--panel-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
 }
 
-/* hidden */
+.btn-post-modal:hover {
+    background-color: var(--accent-hover);
+}
+
+/* ---------------------------------------------------------------
+   HIDDEN UTILITY
+--------------------------------------------------------------- */
 
 .hidden {
     display: none !important;
