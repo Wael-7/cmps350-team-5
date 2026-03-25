@@ -19,31 +19,13 @@ if (!targetUserId) {
 const targetUser = getUserById(targetUserId);
 
 function setNavbar() {
-  const userNameNode = document.querySelector(".user-name");
-  const avatarNode = document.querySelector(".user-avatar");
-  const profileTile = document.querySelector(".user-profile");
-
   if (isUserLoggedIn) {
-    userNameNode.textContent = currentUser.username;
-    profileTile.style.cursor = "pointer";
-    profileTile.addEventListener("click", () => {
-      window.location.href = `profile.html?id=${currentUser.id}`;
-    });
-
-    if (currentUser.profilePicture) {
-      avatarNode.src = currentUser.profilePicture;
-    } else {
-      avatarNode.src = `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
-    }
-
     document.querySelector(".btn-logout").textContent = "Logout";
     document.querySelector(".btn-logout").addEventListener("click", () => {
       logoutUser();
       window.location.href = "login.html";
     });
   } else {
-    userNameNode.textContent = "Guest";
-    avatarNode.src = "https://ui-avatars.com/api/?name=Guest&background=d4a853&color=fff";
     document.querySelector(".btn-logout").textContent = "Login";
     document.querySelector(".btn-logout").addEventListener("click", () => {
       window.location.href = "login.html";
