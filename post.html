@@ -4,18 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post</title>
+    <title>Hive — Post</title>
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
         rel="stylesheet" />
-
     <link rel="stylesheet" href="css/feed.css" />
     <link rel="stylesheet" href="css/post.css" />
 </head>
 
 <body>
 
-    <!-- Navbar (same as feed.html) -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-left">
             <div class="brand">
@@ -35,51 +34,59 @@
             <button class="btn-logout">Logout</button>
         </div>
     </nav>
-    //--- Back button and post container --------------
+
+    <!-- Back button bar -->
     <div class="post-header-bar">
         <button class="btn-back" onclick="window.location.href='feed.html'">← Back to Feed</button>
     </div>
+
+    <!-- Post + Comments -->
     <div class="post-container">
-        <div id="singlePost" class="card">
+
+        <!-- Post Card -->
+        <div id="singlePost" class="post-card">
+
+            <!-- Post Header -->
             <div class="post-header">
-                <button class="btn-delete" id="deletePostBtn" style="display: none;">🗑️</button>
                 <div class="author-info">
                     <img class="author-avatar" src="" alt="Author Avatar" />
-                    <div>
+                    <div class="author-meta">
                         <h3 class="author-name"></h3>
                         <span class="post-timestamp"></span>
                     </div>
                 </div>
+                <button class="btn-delete" id="deletePostBtn" style="display: none;">🗑️</button>
             </div>
 
+            <!-- Post Content -->
             <p class="post-content"></p>
 
-            <!-- === COMMENT SECTION START === -->
-            <div class="comments-section">
-                <h4>Comments:</h4>
-                <ul id="comments-list-12345">
-                    <!-- Comments will be added here dynamically -->
-                </ul>
+            <!-- Like Button -->
+            <div class="post-footer">
+                <button class="like-btn" id="likeBtn">
+                    ❤️ <span class="like-count">0</span>
+                </button>
             </div>
-
-            <!-- Add Comment Section -->
-            <div class="add-comment">
-                <textarea id="comment-input-12345" placeholder="Write a comment..."></textarea>
-                <button onclick="handleAddComment('12345')">Add Comment</button>
-            </div>
-            <!-- === COMMENT SECTION END === -->
 
         </div>
-    </div>
 
-    <div class="post-footer">
-        <button class="like-btn" id="likeBtn">
-            👍 <span class="like-count">0</span>
-        </button>
-    </div>
-    </div>
-    </div>
+        <!-- Comments Section -->
+        <div class="comments-section">
 
+            <h4 class="comments-title">Comments</h4>
+
+            <!-- Add Comment -->
+            <div class="add-comment">
+                <textarea id="commentInput" placeholder="Write a comment..."></textarea>
+                <button class="btn-submit-comment" id="submitComment">Post Comment</button>
+            </div>
+
+            <!-- Comments List -->
+            <ul class="comments-list" id="commentsList"></ul>
+
+        </div>
+
+    </div>
 
     <script src="js/storage.js"></script>
     <script src="js/post.js"></script>
