@@ -53,18 +53,16 @@
             </div>
 
             <p class="post-content"></p>
+            
+            <!-- Display Comments Section -->
             <div class="comments-section">
                 <h4>Comments:</h4>
                 <ul id="comments-list">
+                    <!-- Comments will be dynamically added here -->
                 </ul>
             </div>
 
-            <div class="comments-section">
-                <h4>Comments:</h4>
-                <ul id="comments-list-{{post.id}}">
-                </ul>
-            </div>
-
+            <!-- Add Comment Section -->
             <div class="add-comment">
                 <textarea id="comment-input" placeholder="Add a comment..."></textarea>
                 <button onclick="addCommentToPost()">Add Comment</button>

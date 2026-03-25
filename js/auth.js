@@ -315,58 +315,50 @@ if (loginForm) {
     window.location.href = "feed.html";
   });
 
-  function addCommentToPost(postId) {
-    const commentInput = document.getElementById(`comment-input-${postId}`);
+  // Function to add a comment
+  function addCommentToPost() {
+    const commentInput = document.getElementById("comment-input");
     const commentContent = commentInput.value.trim();
 
-    // Check if the comment is not empty
     if (commentContent === "") {
       alert("Comment cannot be empty!");
       return;
     }
 
-    // Check if the user is logged in
-    const currentUser = getCurrentUser();  // Get the current user from localStorage
+    const currentUser = getCurrentUser();  // Get the current logged-in user
     if (!currentUser) {
       alert("You must be logged in to comment!");
       return;
     }
 
-    // Call the addComment function (from storage.js) to add the comment
-    const result = addComment(postId, currentUser.id, commentContent);
+    const result = addComment(currentUser.id, commentContent);
 
     if (result.success) {
       alert("Comment added successfully!");
-      // Reload the post to show the new comment
-      loadPostComments(postId);
+      loadPostComments();
     } else {
-      alert(result.error);  // Show any error that occurs
+      alert(result.error);
     }
 
-    // Clear the input field
     commentInput.value = "";
   }
 
-  function loadPostComments(postId) {
-    const commentsList = document.getElementById(`comments-list-${postId}`);
-    const post = getPostById(postId);  // Get the post by its ID from storage.js
+  // Function to display comments for the post
+  function loadPostComments() {
+    const commentsList = document.getElementById("comments-list");
+    const post = getPosts()[0];  // Get the first post from localStorage (we are showing one post for now)
 
-    // Clear current comments
-    commentsList.innerHTML = "";
+    if (!post || post.comments.length === 0) {
+      commentsList.innerHTML = "<li>No comments yet.</li>";  // If no comments, show this message
+      return;
+    }
 
-    // Loop through the comments and add them to the list
+    commentsList.innerHTML = "";  // Clear the current comments list
+
     post.comments.forEach(comment => {
-      const li = document.createElement("li");
-      li.textContent = comment.content;
-      commentsList.appendChild(li);
+      const li = document.createElement("li");  // Create a list item for each comment
+      li.textContent = comment.content;  // Set the comment content
+      commentsList.appendChild(li);  // Append the list item to the comments list
     });
-
   }
-  window.onload = function () {
-    const posts = getPosts();  // Get all posts from storage
-
-    posts.forEach(post => {
-      loadPostComments(post.id);  // Load comments for each post
-    });
-  };
 }
