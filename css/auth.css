@@ -2,7 +2,7 @@
    auth.css — Styles for Register & Login pages
 --------------------------------------------------------------- */
 
- /* --------------------------------------------------------------
+/* --------------------------------------------------------------
  CSS Variables for consistent theming
  ---------------------------------------------------------------*/
 
@@ -21,7 +21,7 @@
   --radius: 10px;
   --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
- 
+
 *,
 *::before,
 *::after {
@@ -29,12 +29,12 @@
   margin: 0;
   padding: 0;
 }
- 
+
 html,
 body {
   height: 100%;
 }
- 
+
 body {
   font-family: "DM Sans", sans-serif;
   background-color: var(--bg);
@@ -45,8 +45,8 @@ body {
   min-height: 100vh;
   padding: 24px 16px;
 }
- 
- /* --------------------------------------------------------------
+
+/* --------------------------------------------------------------
    LAYOUT
 --------------------------------------------------------------- */
 .page-wrapper {
@@ -56,7 +56,7 @@ body {
   max-width: 440px;
   gap: 24px;
 }
- 
+
 /* --------------------------------------------------------------
    BRAND
 --------------------------------------------------------------- */
@@ -66,7 +66,7 @@ body {
   align-items: center;
   gap: 6px;
 }
- 
+
 .brand-logo {
   width: 44px;
   height: 44px;
@@ -76,20 +76,20 @@ body {
   align-items: center;
   justify-content: center;
 }
- 
+
 .brand-logo svg {
   width: 24px;
   height: 24px;
   fill: var(--accent);
 }
- 
+
 .brand-name {
   font-family: "DM Serif Display", serif;
   font-size: 1.6rem;
   color: var(--text-primary);
   letter-spacing: -0.5px;
 }
- 
+
 /* --------------------------------------------------------------
    CARD
 --------------------------------------------------------------- */
@@ -100,18 +100,18 @@ body {
   padding: 36px 32px;
   box-shadow: var(--shadow);
 }
- 
+
 .card-header {
   margin-bottom: 28px;
 }
- 
+
 .card-title {
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
 }
- 
+
 .card-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -126,13 +126,13 @@ body {
   flex-direction: column;
   gap: 18px;
 }
- 
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
- 
+
 .form-label {
   font-size: 0.8rem;
   font-weight: 500;
@@ -140,11 +140,11 @@ body {
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
- 
+
 .input-wrapper {
   position: relative;
 }
- 
+
 .form-input {
   width: 100%;
   padding: 11px 14px;
@@ -157,25 +157,25 @@ body {
   outline: none;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
- 
+
 .form-input::placeholder {
   color: #b5b3ac;
 }
- 
+
 .form-input:focus {
   border-color: var(--input-focus);
   background: #ffffff;
 }
- 
+
 .form-input.error {
   border-color: var(--error);
   background: var(--error-bg);
 }
- 
+
 .form-input.valid {
   border-color: var(--success);
 }
- 
+
 /* Password toggle button */
 .toggle-password {
   position: absolute;
@@ -191,15 +191,15 @@ body {
   padding: 2px;
   transition: color 0.2s;
 }
- 
+
 .toggle-password:hover {
   color: var(--text-primary);
 }
- 
+
 .form-input.has-toggle {
   padding-right: 40px;
 }
- 
+
 /* Error message */
 .error-msg {
   font-size: 0.78rem;
@@ -208,36 +208,36 @@ body {
   align-items: center;
   gap: 4px;
 }
- 
+
 .error-msg.visible {
   display: flex;
 }
- 
+
 /* Password strength bar */
 .strength-bar-wrapper {
   display: none;
   flex-direction: column;
   gap: 4px;
 }
- 
+
 .strength-bar-wrapper.visible {
   display: flex;
 }
- 
+
 .strength-bar-track {
   height: 3px;
   background: var(--border);
   border-radius: 99px;
   overflow: hidden;
 }
- 
+
 .strength-bar-fill {
   height: 100%;
   width: 0%;
   border-radius: 99px;
   transition: width 0.3s ease, background-color 0.3s ease;
 }
- 
+
 .strength-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
@@ -261,15 +261,15 @@ body {
   transition: background-color 0.2s ease, transform 0.1s ease;
   letter-spacing: 0.2px;
 }
- 
+
 .btn-submit:hover {
   background-color: #2e2d2a;
 }
- 
+
 .btn-submit:active {
   transform: scale(0.99);
 }
- 
+
 /* --------------------------------------------------------------
    DIVIDER & LINK
 --------------------------------------------------------------- */
@@ -279,25 +279,25 @@ body {
   gap: 12px;
   margin-top: 4px;
 }
- 
+
 .divider-line {
   flex: 1;
   height: 1px;
   background: var(--border);
 }
- 
+
 .divider-text {
   font-size: 0.78rem;
   color: var(--text-secondary);
   white-space: nowrap;
 }
- 
+
 .auth-link {
   text-align: center;
   font-size: 0.875rem;
   color: var(--text-secondary);
 }
- 
+
 .auth-link a {
   color: var(--text-primary);
   font-weight: 500;
@@ -306,12 +306,12 @@ body {
   padding-bottom: 1px;
   transition: color 0.2s, border-color 0.2s;
 }
- 
+
 .auth-link a:hover {
   color: var(--accent-hover);
   border-color: var(--accent-hover);
 }
- 
+
 /* --------------------------------------------------------------
    GLOBAL ERROR BANNER
 --------------------------------------------------------------- */
@@ -325,16 +325,170 @@ body {
   color: var(--error);
   margin-bottom: 4px;
 }
- 
+
 .global-error.visible {
   display: block;
 }
- 
+
 /* --------------------------------------------------------------
    RESPONSIVE
 --------------------------------------------------------------- */
 @media (max-width: 480px) {
   .card {
     padding: 28px 20px;
+  }
+}
+
+/* Basic Flexbox for Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--bg);
+  border-bottom: 2px solid var(--border);
+}
+
+.navbar .navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .user-profile img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Card layout for posts */
+.post-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--surface);
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  background-color: var(--surface);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+/* Make post content flexible */
+.post-content {
+  margin-bottom: 15px;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-footer button {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .post-footer button {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+/* Comment section styling */
+.comments-section {
+  margin-top: 20px;
+}
+
+.comments-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.comments-section li {
+  padding: 10px;
+  background-color: var(--border);
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.add-comment {
+  margin-top: 20px;
+}
+
+.add-comment textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.add-comment button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .add-comment textarea {
+    font-size: 14px;
+  }
+
+  .add-comment button {
+    font-size: 16px;
+    padding: 14px;
   }
 }
