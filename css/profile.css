@@ -206,6 +206,10 @@ body {
     color: var(--text-primary);
     margin: 0 0 10px 0;
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
 }
 
 .post-meta {
