@@ -210,8 +210,9 @@ function createPostCard(post) {
     card.appendChild(footer);
 
     card.addEventListener("click", (e) => {
-        // Don't navigate if clicking the delete button
+        // Don't navigate if clicking the delete button or like button
         if (e.target.closest(".btn-delete")) return;
+        if (e.target.closest(".like-btn")) return;
 
         window.location.href = `post.html?id=${post.id}`;
     });
