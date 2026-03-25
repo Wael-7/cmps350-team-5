@@ -61,29 +61,29 @@ function setupToggle(toggleBtn, inputEl, eyeIconEl) {
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
-  const usernameInput   = document.getElementById("username");
-  const emailInput      = document.getElementById("email");
-  const passwordInput   = document.getElementById("password");
-  const confirmInput    = document.getElementById("confirmPassword");
-  const globalError     = document.getElementById("globalError");
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmInput = document.getElementById("confirmPassword");
+  const globalError = document.getElementById("globalError");
 
-  const usernameError   = document.getElementById("usernameError");
-  const emailError      = document.getElementById("emailError");
-  const passwordError   = document.getElementById("passwordError");
-  const confirmError    = document.getElementById("confirmError");
+  const usernameError = document.getElementById("usernameError");
+  const emailError = document.getElementById("emailError");
+  const passwordError = document.getElementById("passwordError");
+  const confirmError = document.getElementById("confirmError");
 
   const strengthWrapper = document.getElementById("strengthWrapper");
-  const strengthFill    = document.getElementById("strengthFill");
-  const strengthLabel   = document.getElementById("strengthLabel");
+  const strengthFill = document.getElementById("strengthFill");
+  const strengthLabel = document.getElementById("strengthLabel");
 
   // Password strength checker
   function getPasswordStrength(password) {
     let score = 0;
-    if (password.length >= 8)           score++;
-    if (password.length >= 12)          score++;
-    if (/[A-Z]/.test(password))         score++;
-    if (/[0-9]/.test(password))         score++;
-    if (/[^A-Za-z0-9]/.test(password))  score++;
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
     return score;
   }
 
@@ -100,17 +100,17 @@ if (registerForm) {
     const score = getPasswordStrength(val);
 
     const levels = [
-      { label: "Very weak",   color: "#e74c3c", width: "20%"  },
-      { label: "Weak",        color: "#e67e22", width: "40%"  },
-      { label: "Fair",        color: "#f1c40f", width: "60%"  },
-      { label: "Strong",      color: "#2ecc71", width: "80%"  },
+      { label: "Very weak", color: "#e74c3c", width: "20%" },
+      { label: "Weak", color: "#e67e22", width: "40%" },
+      { label: "Fair", color: "#f1c40f", width: "60%" },
+      { label: "Strong", color: "#2ecc71", width: "80%" },
       { label: "Very strong", color: "#27ae60", width: "100%" },
     ];
 
     const level = levels[Math.min(score - 1, 4)] || levels[0];
-    strengthFill.style.width           = level.width;
+    strengthFill.style.width = level.width;
     strengthFill.style.backgroundColor = level.color;
-    strengthLabel.textContent          = level.label;
+    strengthLabel.textContent = level.label;
   });
 
   // Setup password toggles
@@ -178,14 +178,14 @@ if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
- 
+
     const username = usernameInput.value.trim();
-    const email    = emailInput.value.trim();
+    const email = emailInput.value.trim();
     const password = passwordInput.value;
-    const confirm  = confirmInput.value;
- 
+    const confirm = confirmInput.value;
+
     let valid = true;
- 
+
     if (!username) {
       showError(usernameInput, usernameError, "Please enter a username.");
       valid = false;
@@ -193,7 +193,7 @@ if (registerForm) {
       showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only.");
       valid = false;
     }
- 
+
     if (!email) {
       showError(emailInput, emailError, "Please enter your email address.");
       valid = false;
@@ -201,7 +201,7 @@ if (registerForm) {
       showError(emailInput, emailError, "Please enter a valid email address.");
       valid = false;
     }
- 
+
     if (!password) {
       showError(passwordInput, passwordError, "Please enter a password.");
       valid = false;
@@ -209,7 +209,7 @@ if (registerForm) {
       showError(passwordInput, passwordError, "Password must be at least 8 characters.");
       valid = false;
     }
- 
+
     if (!confirm) {
       showError(confirmInput, confirmError, "Please confirm your password.");
       valid = false;
@@ -217,18 +217,18 @@ if (registerForm) {
       showError(confirmInput, confirmError, "Passwords do not match.");
       valid = false;
     }
- 
+
     if (!valid) return;
- 
+
     // Call storage.js
     const result = registerUser(username, email, password);
- 
+
     if (!result.success) {
       globalError.textContent = result.error;
       globalError.classList.add("visible");
       return;
     }
- 
+
     // Success — redirect to login
     window.location.href = "login.html";
   });
@@ -237,23 +237,23 @@ if (registerForm) {
 // ---------------------------------------------------------------
 // LOGIN PAGE
 // ---------------------------------------------------------------
- 
+
 const loginForm = document.getElementById("loginForm");
- 
+
 if (loginForm) {
-  const emailInput    = document.getElementById("email");
+  const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-  const globalError   = document.getElementById("globalError");
-  const emailError    = document.getElementById("emailError");
+  const globalError = document.getElementById("globalError");
+  const emailError = document.getElementById("emailError");
   const passwordError = document.getElementById("passwordError");
- 
+
   // Setup password toggle
   setupToggle(
     document.getElementById("togglePassword"),
     passwordInput,
     document.getElementById("eyeIcon")
   );
- 
+
   // Live validation on blur
   emailInput.addEventListener("blur", () => {
     const val = emailInput.value.trim();
@@ -266,7 +266,7 @@ if (loginForm) {
       markValid(emailInput);
     }
   });
- 
+
   passwordInput.addEventListener("blur", () => {
     const val = passwordInput.value;
     if (!val) {
@@ -276,17 +276,17 @@ if (loginForm) {
       markValid(passwordInput);
     }
   });
- 
+
   // Form submission
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
- 
-    const email    = emailInput.value.trim();
+
+    const email = emailInput.value.trim();
     const password = passwordInput.value;
- 
+
     let valid = true;
- 
+
     if (!email) {
       showError(emailInput, emailError, "Please enter your email address.");
       valid = false;
@@ -294,24 +294,79 @@ if (loginForm) {
       showError(emailInput, emailError, "Please enter a valid email address.");
       valid = false;
     }
- 
+
     if (!password) {
       showError(passwordInput, passwordError, "Please enter your password.");
       valid = false;
     }
- 
+
     if (!valid) return;
- 
+
     // Call storage.js
     const result = loginUser(email, password);
- 
+
     if (!result.success) {
       globalError.textContent = result.error;
       globalError.classList.add("visible");
       return;
     }
- 
+
     // Success — redirect to feed
     window.location.href = "feed.html";
   });
+
+  function addCommentToPost(postId) {
+    const commentInput = document.getElementById(`comment-input-${postId}`);
+    const commentContent = commentInput.value.trim();
+
+    // Check if the comment is not empty
+    if (commentContent === "") {
+      alert("Comment cannot be empty!");
+      return;
+    }
+
+    // Check if the user is logged in
+    const currentUser = getCurrentUser();  // Get the current user from localStorage
+    if (!currentUser) {
+      alert("You must be logged in to comment!");
+      return;
+    }
+
+    // Call the addComment function (from storage.js) to add the comment
+    const result = addComment(postId, currentUser.id, commentContent);
+
+    if (result.success) {
+      alert("Comment added successfully!");
+      // Reload the post to show the new comment
+      loadPostComments(postId);
+    } else {
+      alert(result.error);  // Show any error that occurs
+    }
+
+    // Clear the input field
+    commentInput.value = "";
+  }
+
+  function loadPostComments(postId) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    const post = getPostById(postId);  // Get the post by its ID from storage.js
+
+    // Clear current comments
+    commentsList.innerHTML = "";
+
+    // Loop through the comments and add them to the list
+    post.comments.forEach(comment => {
+      const li = document.createElement("li");
+      li.textContent = comment.content;
+      commentsList.appendChild(li);
+    });
+
+  }
+  window.onload = function () {
+    const posts = getPosts();  // Get all posts from storage
+
+    posts.forEach(post => {
+      loadPostComments(post.id);  // Load comments for each post
+    });
+  };
 }

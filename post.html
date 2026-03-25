@@ -8,14 +8,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
         rel="stylesheet" />
-        
+
     <link rel="stylesheet" href="css/feed.css" />
     <link rel="stylesheet" href="css/post.css" />
 </head>
 
 <body>
 
-        <!-- Navbar (same as feed.html) -->
+    <!-- Navbar (same as feed.html) -->
     <nav class="navbar">
         <div class="navbar-left">
             <div class="brand">
@@ -53,6 +53,22 @@
             </div>
 
             <p class="post-content"></p>
+            <div class="comments-section">
+                <h4>Comments:</h4>
+                <ul id="comments-list">
+                </ul>
+            </div>
+
+            <div class="comments-section">
+                <h4>Comments:</h4>
+                <ul id="comments-list-{{post.id}}">
+                </ul>
+            </div>
+
+            <div class="add-comment">
+                <textarea id="comment-input" placeholder="Add a comment..."></textarea>
+                <button onclick="addCommentToPost()">Add Comment</button>
+            </div>
 
             <div class="post-footer">
                 <button class="like-btn" id="likeBtn">
