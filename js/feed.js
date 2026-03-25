@@ -183,7 +183,8 @@ function createPostCard(post) {
 
     const likeBtn = document.createElement("button");
     likeBtn.className = "like-btn";
-    likeBtn.innerHTML = ` ${post.likes.length}`; //temporary icon
+    const likeCount = post.likes.length;
+    likeBtn.innerHTML = `👍 ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}`;
     likeBtn.disabled = !isUserLoggedIn;
 
     if (!isUserLoggedIn) {
