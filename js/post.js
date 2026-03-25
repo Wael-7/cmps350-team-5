@@ -4,6 +4,38 @@ const currentUser = isLoggedIn() ? getCurrentUser() : null;
 const isUserLoggedIn = currentUser !== null;
 if (!isLoggedIn()) window.location.href = "login.html";
 
+// Navbar setup
+if (isUserLoggedIn) {
+    const userNameEl = document.querySelector(".user-name");
+    const avatar = document.querySelector(".user-avatar");
+
+    userNameEl.textContent = currentUser.username;
+    if (currentUser.profilePicture) {
+        avatar.src = currentUser.profilePicture;
+    } else {
+        avatar.src =
+            `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+    }
+
+    // Navigation: navbar user profile click leads to profile page
+    const userProfileContainer = document.querySelector(".user-profile");
+    userProfileContainer.style.cursor = "pointer";
+    userProfileContainer.addEventListener("click", () => {
+        window.location.href = `profile.html?id=${currentUser.id}`;
+    });
+
+    document.querySelector(".btn-logout").addEventListener("click", () => {
+        logoutUser();
+        window.location.href = "login.html";
+    });
+} else {
+    document.querySelector(".user-name").textContent = "Guest";
+    document.querySelector(".btn-logout").textContent = "Login";
+    document.querySelector(".btn-logout").addEventListener("click", () => {
+        window.location.href = "login.html";
+    });
+}
+
 // Get post ID from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
@@ -37,10 +69,22 @@ function loadPost() {
     } else {
         authorAvatar.src = `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
     }
+    authorAvatar.style.cursor = "pointer";
+    authorAvatar.addEventListener("click", () => {
+        if (author) {
+            window.location.href = `profile.html?id=${author.id}`;
+        }
+    });
 
     // Set author name
-    singlePostDiv.querySelector(".author-name").textContent =
-        author ? author.username : "Unknown User";
+    const authorNameEl = singlePostDiv.querySelector(".author-name");
+    authorNameEl.textContent = author ? author.username : "Unknown User";
+    authorNameEl.style.cursor = "pointer";
+    authorNameEl.addEventListener("click", () => {
+        if (author) {
+            window.location.href = `profile.html?id=${author.id}`;
+        }
+    });
 
     // Set timestamp
     singlePostDiv.querySelector(".post-timestamp").textContent =
