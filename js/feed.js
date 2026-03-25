@@ -110,9 +110,6 @@ function createPostCard(post) {
 
     const card = document.createElement("div");
     card.className = "card";
-    if (currentUser && post.authorId === currentUser.id) {
-        card.classList.add("own-post");
-    }
     card.dataset.postId = post.id;
 
     const header = document.createElement("div");
@@ -176,7 +173,8 @@ function createPostCard(post) {
     header.appendChild(authorAvatar);
     header.appendChild(authorInfo);
     header.appendChild(timestamp);
-    header.appendChild(deleteBtn);
+
+    const content = document.createElement("p");
     content.className = "post-content";
     content.textContent = post.content;
 
@@ -185,8 +183,7 @@ function createPostCard(post) {
 
     const likeBtn = document.createElement("button");
     likeBtn.className = "like-btn";
-    const likeCount = post.likes.length;
-    likeBtn.innerHTML = ` ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}`; //temporary icon
+    likeBtn.innerHTML = ` ${post.likes.length}`; //temporary icon
     likeBtn.disabled = !isUserLoggedIn;
 
     if (!isUserLoggedIn) {

@@ -62,10 +62,6 @@ function loadPost() {
     const author = getUserById(post.authorId);
     const singlePostDiv = document.getElementById("singlePost");
 
-    if (currentUser && post.authorId === currentUser.id) {
-        singlePostDiv.classList.add("own-post");
-    }
-
     // Set author avatar
     const authorAvatar = singlePostDiv.querySelector(".author-avatar");
     if (author && author.profilePicture) {
@@ -114,22 +110,13 @@ function loadPost() {
                 }
             }
         });
-        // Move to end for right positioning
-        singlePostDiv.querySelector(".post-header").appendChild(deleteBtn);
     }
 }
 
 function updateLikeButton(post) {
     const likeBtn = document.getElementById("likeBtn");
     const likeCount = likeBtn.querySelector(".like-count");
-    const count = post.likes.length;
-    likeCount.textContent = `${count} ${count === 1 ? 'like' : 'likes'}`;
-
-    if (isUserLoggedIn && hasLiked(post.id, currentUser.id)) {
-        likeBtn.style.opacity = "1";
-    } else {
-        likeBtn.style.opacity = "0.7";
-    }
+    likeCount.textContent = post.likes.length;
 
     if (isUserLoggedIn && hasLiked(post.id, currentUser.id)) {
         likeBtn.style.opacity = "1";

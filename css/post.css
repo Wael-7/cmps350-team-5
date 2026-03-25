@@ -50,8 +50,7 @@
 
 #singlePost {
     width: calc(100% - 24px);
-    max-width: 1000px;
-    margin: 0 auto;
+    max-width: none;
     background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -68,18 +67,6 @@
     align-items: start;
     gap: 12px;
     margin-bottom: 0;
-    position: relative;
-}
-
-.btn-delete {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    right: 0;
 }
 
 #singlePost .author-avatar {
@@ -92,6 +79,12 @@
     display: flex;
     flex-direction: column;
     grid-column: 2;
+}
+
+#singlePost .post-timestamp {
+    grid-column: 3;
+    text-align: right;
+    white-space: nowrap;
 }
 
 #singlePost .post-content {
