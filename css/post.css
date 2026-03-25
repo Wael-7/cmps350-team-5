@@ -40,64 +40,135 @@
 }
 
 .post-container {
-    margin-top: 200px;
-    padding: 12px;
+    margin-top: 120px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    width: 100%;
 }
 
 #singlePost {
     width: calc(100% - 24px);
-    max-width: none;
+    max-width: 1000px;
+    margin: 0 auto;
     background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 48px;
+    border-radius: 16px;
+    padding: 32px;
     box-shadow: var(--shadow);
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 24px;
 }
 
 #singlePost .post-header {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: start;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 0;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+#singlePost .author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
 }
 
 #singlePost .author-avatar {
     width: 48px;
     height: 48px;
-    grid-column: 1;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    transition: border-color 0.3s ease;
 }
 
-#singlePost .author-info {
-    display: flex;
-    flex-direction: column;
-    grid-column: 2;
+#singlePost .author-avatar:hover {
+    border-color: var(--accent-hover);
+}
+
+#singlePost .author-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+#singlePost .author-name:hover {
+    color: var(--accent);
 }
 
 #singlePost .post-timestamp {
-    grid-column: 3;
-    text-align: right;
-    white-space: nowrap;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.btn-delete {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    position: absolute;
+    top: 12px;
+    right: 0;
+}
+
+.btn-delete:hover {
+    background-color: var(--error-bg);
+    color: var(--error);
 }
 
 #singlePost .post-content {
     font-size: 1.1rem;
-    line-height: 1.8;
+    line-height: 1.7;
+    color: var(--text-primary);
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 #singlePost .like-btn {
-    width: auto;
-    padding: 12px 24px;
-    margin-top: 0;
-    align-self: start;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    min-width: 80px;
+    justify-content: center;
+    align-self: flex-start;
+}
+
+#singlePost .like-btn:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: scale(1.05);
+}
+
+#singlePost .like-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#singlePost .like-btn {
     background-color: var(--bg);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -122,12 +193,48 @@
 /* Media Queries */
 
 @media (min-width: 640px) {
-    .post-container {
-        margin-top: 130px; /* navbar (60px) + back bar (50px) + gap (20px) */
-        padding: 24px;
+    .post-header-bar {
+        height: 60px;
+        padding: 0 24px;
     }
- 
+
+    .btn-back {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .post-container {
+        margin-top: 140px;
+        padding: 32px 20px;
+    }
+
     #singlePost {
         padding: 48px;
+        border-radius: 20px;
+    }
+
+    #singlePost .author-avatar {
+        width: 56px;
+        height: 56px;
+    }
+
+    #singlePost .author-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    #singlePost .post-timestamp {
+        font-size: 1rem;
+    }
+
+    #singlePost .post-content {
+        font-size: 1.2rem;
+        line-height: 1.8;
+    }
+
+    #singlePost .like-btn {
+        padding: 14px 24px;
+        font-size: 1rem;
+        font-weight: 600;
     }
 }

@@ -116,7 +116,8 @@ function loadPost() {
 function updateLikeButton(post) {
     const likeBtn = document.getElementById("likeBtn");
     const likeCount = likeBtn.querySelector(".like-count");
-    likeCount.textContent = post.likes.length;
+    const count = post.likes.length;
+    likeCount.textContent = `${count} ${count === 1 ? 'like' : 'likes'}`;
 
     if (isUserLoggedIn && hasLiked(post.id, currentUser.id)) {
         likeBtn.style.opacity = "1";
