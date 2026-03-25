@@ -11,8 +11,19 @@
 }
 
 /* Layout adjustments for profile page */
+html,
 body {
-    padding-top: 60px;
+    height: auto;
+    min-height: 100vh;
+}
+
+body {
+    padding-top: 50px;
+    min-height: 100vh;
+    overflow-y: auto;
+    display: block;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 .navbar {
@@ -220,8 +231,19 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    html,
+    body {
+        height: auto;
+        min-height: 100vh;
+    }
+
     body {
         padding-top: 50px;
+        min-height: 100vh;
+        overflow-y: auto;
+        display: block;
+        align-items: stretch;
+        justify-content: flex-start;
     }
 
     .profile-container {
