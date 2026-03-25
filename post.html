@@ -53,27 +53,31 @@
             </div>
 
             <p class="post-content"></p>
-            
-            <!-- Display Comments Section -->
+
+            <!-- === COMMENT SECTION START === -->
             <div class="comments-section">
                 <h4>Comments:</h4>
-                <ul id="comments-list">
-                    <!-- Comments will be dynamically added here -->
+                <ul id="comments-list-12345">
+                    <!-- Comments will be added here dynamically -->
                 </ul>
             </div>
 
             <!-- Add Comment Section -->
             <div class="add-comment">
-                <textarea id="comment-input" placeholder="Add a comment..."></textarea>
-                <button onclick="addCommentToPost()">Add Comment</button>
+                <textarea id="comment-input-12345" placeholder="Write a comment..."></textarea>
+                <button onclick="handleAddComment('12345')">Add Comment</button>
             </div>
+            <!-- === COMMENT SECTION END === -->
 
-            <div class="post-footer">
-                <button class="like-btn" id="likeBtn">
-                    👍 <span class="like-count">0</span>
-                </button>
-            </div>
         </div>
+    </div>
+
+    <div class="post-footer">
+        <button class="like-btn" id="likeBtn">
+            👍 <span class="like-count">0</span>
+        </button>
+    </div>
+    </div>
     </div>
 
 

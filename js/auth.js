@@ -316,49 +316,46 @@ if (loginForm) {
   });
 
   // Function to add a comment
-  function addCommentToPost() {
-    const commentInput = document.getElementById("comment-input");
+  function handleAddComment(postId) {
+    const commentInput = document.getElementById(`comment-input-${postId}`);
     const commentContent = commentInput.value.trim();
 
-    if (commentContent === "") {
+    if (!commentContent) {
       alert("Comment cannot be empty!");
       return;
     }
 
-    const currentUser = getCurrentUser();  // Get the current logged-in user
+    const currentUser = getCurrentUser();  // Check if the user is logged in
     if (!currentUser) {
       alert("You must be logged in to comment!");
       return;
     }
 
-    const result = addComment(currentUser.id, commentContent);
+    const result = addComment(postId, currentUser.id, commentContent);
 
     if (result.success) {
-      alert("Comment added successfully!");
-      loadPostComments();
+      commentInput.value = "";  // Clear input after adding comment
+      loadPostComments(postId);  // Reload the comments for this post
     } else {
       alert(result.error);
     }
-
-    commentInput.value = "";
   }
 
   // Function to display comments for the post
-  function loadPostComments() {
-    const commentsList = document.getElementById("comments-list");
-    const post = getPosts()[0];  // Get the first post from localStorage (we are showing one post for now)
+  function loadPostComments(postId) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    const post = getPostById(postId);  // Get post data by ID
 
-    if (!post || post.comments.length === 0) {
-      commentsList.innerHTML = "<li>No comments yet.</li>";  // If no comments, show this message
+    if (!post || !post.comments || post.comments.length === 0) {
+      commentsList.innerHTML = "<li>No comments yet.</li>";
       return;
     }
 
-    commentsList.innerHTML = "";  // Clear the current comments list
-
-    post.comments.forEach(comment => {
-      const li = document.createElement("li");  // Create a list item for each comment
-      li.textContent = comment.content;  // Set the comment content
-      commentsList.appendChild(li);  // Append the list item to the comments list
+    commentsList.innerHTML = "";  // Clear any existing comments
+    post.comments.forEach(c => {
+      const li = document.createElement("li");
+      li.textContent = `${c.content} — by ${getUserById(c.authorId)?.username || "Unknown"}`;
+      commentsList.appendChild(li);
     });
   }
 }

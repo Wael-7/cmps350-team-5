@@ -338,28 +338,24 @@ function hasLiked(postId, userId) {
 // COMMENT FUNCTIONS
 //------------------------------------------------------------------
 
-// Adding a comment to a post
-function addComment(postId, authorId, content) {
-  if (!content || content.trim() === "") {
-    return { success: false, error: "Comment cannot be empty." };
-  }
+// Function to add a comment to a post
+function addComment(postId, userId, content) {
+  const posts = getPosts();  // Get all posts from localStorage
+  const post = posts.find(p => p.id === postId);
 
-  const posts = getPosts();
-  const index = posts.findIndex((p) => p.id === postId);
-
-  if (index === -1) {
+  if (!post) {
     return { success: false, error: "Post not found." };
   }
 
   const newComment = {
-    id: generateId(),
-    authorId: authorId,
-    content: content.trim(),
+    id: generateId(),  // Generate unique comment ID
+    authorId: userId,
+    content: content,
     timestamp: new Date().toISOString(),
   };
 
-  posts[index].comments.push(newComment);
-  savePosts(posts);
+  post.comments.push(newComment);  // Add the new comment to the post
+  savePosts(posts);  // Save the updated posts array to localStorage
 
   return { success: true, comment: newComment };
 }
@@ -415,24 +411,3 @@ function clearAllData() {
   initStorage();
 }
 
-// Function to add a comment to a post
-function addComment(userId, content) {
-  const posts = getPosts();  // Retrieve all posts from localStorage
-  const post = posts[0];  // For now, assume we are working with the first post
-
-  if (!post) {
-    return { success: false, error: "Post not found." };  // If the post is not found
-  }
-
-  const newComment = {
-    id: generateId(),  // Generate a unique ID for the comment
-    userId: userId,
-    content: content,
-    timestamp: new Date().toISOString(),  // Save the time the comment was added
-  };
-
-  post.comments.push(newComment);  // Add the new comment to the post's comments array
-  savePosts(posts);  // Save the updated posts back to localStorage
-
-  return { success: true, comment: newComment };  // Return success and the new comment object
-}
