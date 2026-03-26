@@ -317,9 +317,9 @@ function getFeedPosts(userId) {
 
   const posts = getPosts();
 
-  // Return posts from followed users OR own posts, sorted newest first
+  // Return posts from followed users only (not own posts), sorted newest first
   return posts
-    .filter((p) => user.following.includes(p.authorId) || p.authorId === userId)
+    .filter((p) => user.following.includes(p.authorId))
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 }
 

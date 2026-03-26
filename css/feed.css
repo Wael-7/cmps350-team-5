@@ -281,7 +281,7 @@ body {
 }
 
 .author-name:hover {
-    color: var(--panel-bg);
+    color: var(--accent);
 }
 
 .post-timestamp {

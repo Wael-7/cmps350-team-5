@@ -426,6 +426,28 @@ createPostForm.addEventListener("submit", (e) => {
         createPostForm.reset();
         modal.classList.add("hidden");
         loadFeed();
+        // Show success message
+        const successMsg = document.createElement("div");
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #d4a853;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        `;
+        successMsg.textContent = "✓ Post created! Check your profile page to see it.";
+        document.body.appendChild(successMsg);
+        setTimeout(() => {
+            successMsg.style.opacity = "0";
+            successMsg.style.transition = "opacity 0.3s";
+            setTimeout(() => successMsg.remove(), 300);
+        }, 3000);
     } else {
         alert("Error: " + result.error);
     }
