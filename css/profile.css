@@ -3,13 +3,14 @@
     --bg: #f5f4f0;
     --surface: #ffffff;
     --border: #e2e0d9;
-    --text-primary: #1a1916;
-    --text-secondary: #6b6860;
+    --text-primary: #000000;
+    --text-secondary: #3b3b38;
     --accent: #d4a853;
     --accent-hover: #c49843;
     --radius: 10px;
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-}
+    --post-text: #000000;    --back-btn-bg: #303029;
+    --back-btn-hover: #5a5750;}
 
 /* Dark theme */
 [data-theme="dark"] {
@@ -17,11 +18,12 @@
     --surface: #2d2d2d;
     --border: #404040;
     --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
+    --text-secondary: #ffffff;
     --accent: #d4a853;
     --accent-hover: #e6b85a;
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
-}
+    --post-text: #ffffff;    --back-btn-bg: #dacbcb88;
+    --back-btn-hover: #3b3737;}
 
 /* Layout adjustments for profile page */
 html,
@@ -166,7 +168,7 @@ body {
 }
 
 .btn-back {
-    background-color: var(--text-secondary);
+    background-color: var(--back-btn-bg);
     color: white;
     border: none;
     padding: 10px 25px;
@@ -178,7 +180,7 @@ body {
 }
 
 .btn-back:hover {
-    background-color: var(--text-primary);
+    background-color: var(--back-btn-hover);
     transform: translateY(-2px);
 }
 
@@ -212,24 +214,26 @@ body {
 
 /* Post Card Styling */
 .post-card {
-    background-color: var(--bg);
+    background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 15px;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s, border-color 0.2s;
     cursor: pointer;
-    transition: all 0.3s ease;
+    position: relative;
 }
 
 .post-card:hover {
-    background-color: #ede8df;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent);
 }
 
 .post-card p {
-    color: var(--text-primary);
-    margin: 0 0 10px 0;
-    line-height: 1.5;
+    font-size: 0.975rem;
+    line-height: 1.65;
+    color: var(--post-text);
+    margin: 0 0 16px 0;
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -237,7 +241,7 @@ body {
 }
 
 .post-meta {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     margin: 0;
 }
