@@ -1,6 +1,7 @@
-//------------------------------------------------------------------
+// =================================================================
 // storage.js — All localStorage read/write logic
-//------------------------------------------------------------------
+// Social Media Platform — CMPS 350
+// =================================================================
 
 const KEYS = {
   USERS: "sm_users",
@@ -9,10 +10,9 @@ const KEYS = {
   THEME: "sm_theme",
 };
 
-//------------------------------------------------------------------
+// =================================================================
 // INITIALIZATION
-// Sets up empty data structures if localStorage is empty
-//------------------------------------------------------------------
+// =================================================================
 
 function initStorage() {
   if (!localStorage.getItem(KEYS.USERS)) {
@@ -23,10 +23,9 @@ function initStorage() {
   }
 }
 
-//------------------------------------------------------------------
-// HELPER FUNCTIONS
-// Internal utilities for reading and writing to localStorage
-//------------------------------------------------------------------
+// =================================================================
+// HELPERS
+// =================================================================
 
 function getUsers() {
   return JSON.parse(localStorage.getItem(KEYS.USERS)) || [];
@@ -48,10 +47,9 @@ function generateId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // SESSION MANAGEMENT
-// Tracks which user is currently logged in
-//------------------------------------------------------------------
+// =================================================================
 
 function setCurrentUser(userId) {
   localStorage.setItem(KEYS.CURRENT_USER, userId);
@@ -71,40 +69,60 @@ function isLoggedIn() {
   return localStorage.getItem(KEYS.CURRENT_USER) !== null;
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // THEME MANAGEMENT
-//------------------------------------------------------------------
+// =================================================================
 
-function setTheme(theme) {
-  localStorage.setItem(KEYS.THEME, theme);
-  document.documentElement.setAttribute('data-theme', theme);
-}
-
-function getTheme() {
-  return localStorage.getItem(KEYS.THEME) || 'light';
-}
-
-function toggleTheme() {
-  const currentTheme = getTheme();
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  setTheme(newTheme);
-  return newTheme;
-}
-
+// Call once on every page load to apply saved theme
 function initTheme() {
-  const theme = getTheme();
-  document.documentElement.setAttribute('data-theme', theme);
+  const saved = localStorage.getItem(KEYS.THEME) || "light";
+  document.documentElement.setAttribute("data-theme", saved);
+  updateThemeIcon(saved);
 }
 
-//------------------------------------------------------------------
-// USER FUNCTIONS
-//------------------------------------------------------------------
+// Toggle between light and dark, persist to localStorage
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem(KEYS.THEME, next);
+  updateThemeIcon(next);
+}
 
-// Registering a new user
+// Update the toggle button icon if it exists on the page
+function updateThemeIcon(theme) {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+  if (theme === "dark") {
+    // Moon icon
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>`;
+    btn.title = "Switch to light mode";
+  } else {
+    // Sun icon
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>`;
+    btn.title = "Switch to dark mode";
+  }
+}
+
+// =================================================================
+// USER FUNCTIONS
+// =================================================================
+
 function registerUser(username, email, password) {
   const users = getUsers();
 
-  // Check if email already exists
   const emailExists = users.find(
     (u) => u.email.toLowerCase() === email.toLowerCase()
   );
@@ -112,7 +130,6 @@ function registerUser(username, email, password) {
     return { success: false, error: "Email is already registered." };
   }
 
-  // Checking if username already exists
   const usernameExists = users.find(
     (u) => u.username.toLowerCase() === username.toLowerCase()
   );
@@ -138,7 +155,6 @@ function registerUser(username, email, password) {
   return { success: true, user: newUser };
 }
 
-// Logging in an existing user
 function loginUser(email, password) {
   const users = getUsers();
 
@@ -155,13 +171,11 @@ function loginUser(email, password) {
   return { success: true, user };
 }
 
-// Getting a single user by their ID
 function getUserById(userId) {
   const users = getUsers();
   return users.find((u) => u.id === userId) || null;
 }
 
-// Getting a single user by their username
 function getUserByUsername(username) {
   const users = getUsers();
   return (
@@ -170,7 +184,6 @@ function getUserByUsername(username) {
   );
 }
 
-// Updating a user's profile
 function updateUserProfile(userId, updates) {
   const users = getUsers();
   const index = users.findIndex((u) => u.id === userId);
@@ -179,7 +192,6 @@ function updateUserProfile(userId, updates) {
     return { success: false, error: "User not found." };
   }
 
-  // Only allow safe fields to be updated
   const allowedFields = ["username", "bio", "profilePicture"];
   allowedFields.forEach((field) => {
     if (updates[field] !== undefined) {
@@ -191,18 +203,16 @@ function updateUserProfile(userId, updates) {
   return { success: true, user: users[index] };
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // FOLLOW FUNCTIONS
-//------------------------------------------------------------------
+// =================================================================
 
-// Following a user
 function followUser(currentUserId, targetUserId) {
   if (currentUserId === targetUserId) {
     return { success: false, error: "You cannot follow yourself." };
   }
 
   const users = getUsers();
-
   const currentIndex = users.findIndex((u) => u.id === currentUserId);
   const targetIndex = users.findIndex((u) => u.id === targetUserId);
 
@@ -210,7 +220,6 @@ function followUser(currentUserId, targetUserId) {
     return { success: false, error: "User not found." };
   }
 
-  // Avoid duplicate follows
   if (users[currentIndex].following.includes(targetUserId)) {
     return { success: false, error: "You are already following this user." };
   }
@@ -222,10 +231,8 @@ function followUser(currentUserId, targetUserId) {
   return { success: true };
 }
 
-// Unfollowing a user
 function unfollowUser(currentUserId, targetUserId) {
   const users = getUsers();
-
   const currentIndex = users.findIndex((u) => u.id === currentUserId);
   const targetIndex = users.findIndex((u) => u.id === targetUserId);
 
@@ -244,19 +251,16 @@ function unfollowUser(currentUserId, targetUserId) {
   return { success: true };
 }
 
-// Checking if current user is following target user
 function isFollowing(currentUserId, targetUserId) {
   const user = getUserById(currentUserId);
   if (!user) return false;
   return user.following.includes(targetUserId);
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // POST FUNCTIONS
-//------------------------------------------------------------------
+// =================================================================
 
-// Create a new post
-// Returns: { success: true, post } or { success: false, error: "..." }
 function createPost(authorId, content) {
   if (!content || content.trim() === "") {
     return { success: false, error: "Post content cannot be empty." };
@@ -273,13 +277,12 @@ function createPost(authorId, content) {
     comments: [],
   };
 
-  posts.unshift(newPost); // Add to the top of the feed
+  posts.unshift(newPost);
   savePosts(posts);
 
   return { success: true, post: newPost };
 }
 
-// Deleting a post (only the author can delete)
 function deletePost(postId, requestingUserId) {
   const posts = getPosts();
   const index = posts.findIndex((p) => p.id === postId);
@@ -298,36 +301,31 @@ function deletePost(postId, requestingUserId) {
   return { success: true };
 }
 
-// Getting a single post by ID
 function getPostById(postId) {
   const posts = getPosts();
   return posts.find((p) => p.id === postId) || null;
 }
 
-// Getting all posts by a specific user
 function getPostsByUser(userId) {
   const posts = getPosts();
   return posts.filter((p) => p.authorId === userId);
 }
 
-// Getting news feed posts for a user (posts from users they follow OR their own posts)
 function getFeedPosts(userId) {
   const user = getUserById(userId);
   if (!user) return [];
 
   const posts = getPosts();
 
-  // Return posts from followed users OR own posts, sorted newest first
   return posts
-    .filter((p) => user.following.includes(p.authorId) || p.authorId === userId)
+    .filter((p) => user.following.includes(p.authorId))
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // LIKE FUNCTIONS
-//------------------------------------------------------------------
+// =================================================================
 
-// Toggle like on a post (like if not liked and unlike if already liked)
 function toggleLike(postId, userId) {
   const posts = getPosts();
   const index = posts.findIndex((p) => p.id === postId);
@@ -353,40 +351,41 @@ function toggleLike(postId, userId) {
   };
 }
 
-// Checking if a user has liked a post
 function hasLiked(postId, userId) {
   const post = getPostById(postId);
   if (!post) return false;
   return post.likes.includes(userId);
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // COMMENT FUNCTIONS
-//------------------------------------------------------------------
+// =================================================================
 
-// Function to add a comment to a post
-function addComment(postId, userId, content) {
-  const posts = getPosts();  // Get all posts from localStorage
-  const post = posts.find(p => p.id === postId);
+function addComment(postId, authorId, content) {
+  if (!content || content.trim() === "") {
+    return { success: false, error: "Comment cannot be empty." };
+  }
 
-  if (!post) {
+  const posts = getPosts();
+  const index = posts.findIndex((p) => p.id === postId);
+
+  if (index === -1) {
     return { success: false, error: "Post not found." };
   }
 
   const newComment = {
-    id: generateId(),  // Generate unique comment ID
-    authorId: userId,
-    content: content,
+    id: generateId(),
+    authorId: authorId,
+    content: content.trim(),
     timestamp: new Date().toISOString(),
   };
 
-  post.comments.push(newComment);  // Add the new comment to the post
-  savePosts(posts);  // Save the updated posts array to localStorage
+  posts[index].comments.push(newComment);
+  savePosts(posts);
 
   return { success: true, comment: newComment };
 }
 
-// Deleting a comment (only the comment author can delete)
 function deleteComment(postId, commentId, requestingUserId) {
   const posts = getPosts();
   const postIndex = posts.findIndex((p) => p.id === postId);
@@ -413,11 +412,10 @@ function deleteComment(postId, commentId, requestingUserId) {
   return { success: true };
 }
 
-//------------------------------------------------------------------
+// =================================================================
 // UTILITY FUNCTIONS
-//------------------------------------------------------------------
+// =================================================================
 
-// Format a timestamp into a readable string (e.g. "March 19, 2026 10:30 AM")
 function formatTimestamp(isoString) {
   const date = new Date(isoString);
   return date.toLocaleString("en-US", {
@@ -429,11 +427,9 @@ function formatTimestamp(isoString) {
   });
 }
 
-// Clear ALL data from localStorage (useful for testing/reset)
 function clearAllData() {
   localStorage.removeItem(KEYS.USERS);
   localStorage.removeItem(KEYS.POSTS);
   localStorage.removeItem(KEYS.CURRENT_USER);
   initStorage();
 }
-

@@ -1,18 +1,19 @@
-//------------------------------------------------------------------
+// =============================================
 // auth.js — Registration & Login logic
-//------------------------------------------------------------------
+// Hive Social Media Platform — CMPS 350
+// =============================================
 
-// Initialize storage on every auth page load
 initStorage();
+initTheme();
 
 // If already logged in, skip to feed
 if (isLoggedIn()) {
   window.location.href = "feed.html";
 }
 
-//------------------------------------------------------------------
-// HELPERS
-//------------------------------------------------------------------
+// =============================================
+// SHARED HELPERS
+// =============================================
 
 function showError(input, errorEl, message) {
   input.classList.add("error");
@@ -36,13 +37,12 @@ function isValidEmail(email) {
 }
 
 function isValidUsername(username) {
-  // 3–30 characters: letters, numbers, underscores only
   return /^[a-zA-Z0-9_]{3,30}$/.test(username);
 }
 
-//------------------------------------------------------------------
+// =============================================
 // PASSWORD TOGGLE
-//------------------------------------------------------------------
+// =============================================
 
 function setupToggle(toggleBtn, inputEl, eyeIconEl) {
   toggleBtn.addEventListener("click", () => {
@@ -54,169 +54,107 @@ function setupToggle(toggleBtn, inputEl, eyeIconEl) {
   });
 }
 
-//------------------------------------------------------------------
+// =============================================
 // REGISTER PAGE
-//------------------------------------------------------------------
+// =============================================
 
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
-  const usernameInput = document.getElementById("username");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const confirmInput = document.getElementById("confirmPassword");
-  const globalError = document.getElementById("globalError");
-
-  const usernameError = document.getElementById("usernameError");
-  const emailError = document.getElementById("emailError");
-  const passwordError = document.getElementById("passwordError");
-  const confirmError = document.getElementById("confirmError");
-
+  const usernameInput   = document.getElementById("username");
+  const emailInput      = document.getElementById("email");
+  const passwordInput   = document.getElementById("password");
+  const confirmInput    = document.getElementById("confirmPassword");
+  const globalError     = document.getElementById("globalError");
+  const usernameError   = document.getElementById("usernameError");
+  const emailError      = document.getElementById("emailError");
+  const passwordError   = document.getElementById("passwordError");
+  const confirmError    = document.getElementById("confirmError");
   const strengthWrapper = document.getElementById("strengthWrapper");
-  const strengthFill = document.getElementById("strengthFill");
-  const strengthLabel = document.getElementById("strengthLabel");
+  const strengthFill    = document.getElementById("strengthFill");
+  const strengthLabel   = document.getElementById("strengthLabel");
 
-  // Password strength checker
   function getPasswordStrength(password) {
     let score = 0;
-    if (password.length >= 8) score++;
-    if (password.length >= 12) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
+    if (password.length >= 8)           score++;
+    if (password.length >= 12)          score++;
+    if (/[A-Z]/.test(password))         score++;
+    if (/[0-9]/.test(password))         score++;
+    if (/[^A-Za-z0-9]/.test(password))  score++;
     return score;
   }
 
   passwordInput.addEventListener("input", () => {
     const val = passwordInput.value;
     clearError(passwordInput, passwordError);
-
-    if (val.length === 0) {
-      strengthWrapper.classList.remove("visible");
-      return;
-    }
-
+    if (val.length === 0) { strengthWrapper.classList.remove("visible"); return; }
     strengthWrapper.classList.add("visible");
     const score = getPasswordStrength(val);
-
     const levels = [
-      { label: "Very weak", color: "#e74c3c", width: "20%" },
-      { label: "Weak", color: "#e67e22", width: "40%" },
-      { label: "Fair", color: "#f1c40f", width: "60%" },
-      { label: "Strong", color: "#2ecc71", width: "80%" },
+      { label: "Very weak",   color: "#e74c3c", width: "20%"  },
+      { label: "Weak",        color: "#e67e22", width: "40%"  },
+      { label: "Fair",        color: "#f1c40f", width: "60%"  },
+      { label: "Strong",      color: "#2ecc71", width: "80%"  },
       { label: "Very strong", color: "#27ae60", width: "100%" },
     ];
-
     const level = levels[Math.min(score - 1, 4)] || levels[0];
-    strengthFill.style.width = level.width;
+    strengthFill.style.width           = level.width;
     strengthFill.style.backgroundColor = level.color;
-    strengthLabel.textContent = level.label;
+    strengthLabel.textContent          = level.label;
   });
 
-  // Setup password toggles
-  setupToggle(
-    document.getElementById("togglePassword"),
-    passwordInput,
-    document.getElementById("eyeIcon")
-  );
-  setupToggle(
-    document.getElementById("toggleConfirm"),
-    confirmInput,
-    document.getElementById("eyeIconConfirm")
-  );
+  setupToggle(document.getElementById("togglePassword"), passwordInput, document.getElementById("eyeIcon"));
+  setupToggle(document.getElementById("toggleConfirm"), confirmInput, document.getElementById("eyeIconConfirm"));
 
-  // Live validation on blur
   usernameInput.addEventListener("blur", () => {
     const val = usernameInput.value.trim();
-    if (!val) {
-      showError(usernameInput, usernameError, "Please enter a username.");
-    } else if (!isValidUsername(val)) {
-      showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only.");
-    } else {
-      clearError(usernameInput, usernameError);
-      markValid(usernameInput);
-    }
+    if (!val) showError(usernameInput, usernameError, "Please enter a username.");
+    else if (!isValidUsername(val)) showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only.");
+    else { clearError(usernameInput, usernameError); markValid(usernameInput); }
   });
 
   emailInput.addEventListener("blur", () => {
     const val = emailInput.value.trim();
-    if (!val) {
-      showError(emailInput, emailError, "Please enter your email address.");
-    } else if (!isValidEmail(val)) {
-      showError(emailInput, emailError, "Please enter a valid email address.");
-    } else {
-      clearError(emailInput, emailError);
-      markValid(emailInput);
-    }
+    if (!val) showError(emailInput, emailError, "Please enter your email address.");
+    else if (!isValidEmail(val)) showError(emailInput, emailError, "Please enter a valid email address.");
+    else { clearError(emailInput, emailError); markValid(emailInput); }
   });
 
   passwordInput.addEventListener("blur", () => {
     const val = passwordInput.value;
-    if (!val) {
-      showError(passwordInput, passwordError, "Please enter a password.");
-    } else if (val.length < 8) {
-      showError(passwordInput, passwordError, "Password must be at least 8 characters.");
-    } else {
-      clearError(passwordInput, passwordError);
-      markValid(passwordInput);
-    }
+    if (!val) showError(passwordInput, passwordError, "Please enter a password.");
+    else if (val.length < 8) showError(passwordInput, passwordError, "Password must be at least 8 characters.");
+    else { clearError(passwordInput, passwordError); markValid(passwordInput); }
   });
 
   confirmInput.addEventListener("blur", () => {
     const val = confirmInput.value;
-    if (!val) {
-      showError(confirmInput, confirmError, "Please confirm your password.");
-    } else if (val !== passwordInput.value) {
-      showError(confirmInput, confirmError, "Passwords do not match.");
-    } else {
-      clearError(confirmInput, confirmError);
-      markValid(confirmInput);
-    }
+    if (!val) showError(confirmInput, confirmError, "Please confirm your password.");
+    else if (val !== passwordInput.value) showError(confirmInput, confirmError, "Passwords do not match.");
+    else { clearError(confirmInput, confirmError); markValid(confirmInput); }
   });
 
-  // Form submission
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
 
     const username = usernameInput.value.trim();
-    const email = emailInput.value.trim();
+    const email    = emailInput.value.trim();
     const password = passwordInput.value;
-    const confirm = confirmInput.value;
-
+    const confirm  = confirmInput.value;
     let valid = true;
 
-    if (!username) {
-      showError(usernameInput, usernameError, "Please enter a username.");
-      valid = false;
-    } else if (!isValidUsername(username)) {
-      showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only.");
-      valid = false;
-    }
+    if (!username) { showError(usernameInput, usernameError, "Please enter a username."); valid = false; }
+    else if (!isValidUsername(username)) { showError(usernameInput, usernameError, "3–30 characters. Letters, numbers, and underscores only."); valid = false; }
 
-    if (!email) {
-      showError(emailInput, emailError, "Please enter your email address.");
-      valid = false;
-    } else if (!isValidEmail(email)) {
-      showError(emailInput, emailError, "Please enter a valid email address.");
-      valid = false;
-    }
+    if (!email) { showError(emailInput, emailError, "Please enter your email address."); valid = false; }
+    else if (!isValidEmail(email)) { showError(emailInput, emailError, "Please enter a valid email address."); valid = false; }
 
-    if (!password) {
-      showError(passwordInput, passwordError, "Please enter a password.");
-      valid = false;
-    } else if (password.length < 8) {
-      showError(passwordInput, passwordError, "Password must be at least 8 characters.");
-      valid = false;
-    }
+    if (!password) { showError(passwordInput, passwordError, "Please enter a password."); valid = false; }
+    else if (password.length < 8) { showError(passwordInput, passwordError, "Password must be at least 8 characters."); valid = false; }
 
-    if (!confirm) {
-      showError(confirmInput, confirmError, "Please confirm your password.");
-      valid = false;
-    } else if (confirm !== password) {
-      showError(confirmInput, confirmError, "Passwords do not match.");
-      valid = false;
-    }
+    if (!confirm) { showError(confirmInput, confirmError, "Please confirm your password."); valid = false; }
+    else if (confirm !== password) { showError(confirmInput, confirmError, "Passwords do not match."); valid = false; }
 
     if (!valid) return;
 
@@ -227,89 +165,60 @@ if (registerForm) {
       return;
     }
 
-    // Success — redirect to login
     window.location.href = "login.html";
   });
 }
 
-// ---------------------------------------------------------------
+// =============================================
 // LOGIN PAGE
-// ---------------------------------------------------------------
+// =============================================
 
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-  const emailInput = document.getElementById("email");
+  const emailInput    = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-  const globalError = document.getElementById("globalError");
-  const emailError = document.getElementById("emailError");
+  const globalError   = document.getElementById("globalError");
+  const emailError    = document.getElementById("emailError");
   const passwordError = document.getElementById("passwordError");
 
-  // Setup password toggle
-  setupToggle(
-    document.getElementById("togglePassword"),
-    passwordInput,
-    document.getElementById("eyeIcon")
-  );
+  setupToggle(document.getElementById("togglePassword"), passwordInput, document.getElementById("eyeIcon"));
 
-  // Live validation on blur
   emailInput.addEventListener("blur", () => {
     const val = emailInput.value.trim();
-    if (!val) {
-      showError(emailInput, emailError, "Please enter your email address.");
-    } else if (!isValidEmail(val)) {
-      showError(emailInput, emailError, "Please enter a valid email address.");
-    } else {
-      clearError(emailInput, emailError);
-      markValid(emailInput);
-    }
+    if (!val) showError(emailInput, emailError, "Please enter your email address.");
+    else if (!isValidEmail(val)) showError(emailInput, emailError, "Please enter a valid email address.");
+    else { clearError(emailInput, emailError); markValid(emailInput); }
   });
 
   passwordInput.addEventListener("blur", () => {
     const val = passwordInput.value;
-    if (!val) {
-      showError(passwordInput, passwordError, "Please enter your password.");
-    } else {
-      clearError(passwordInput, passwordError);
-      markValid(passwordInput);
-    }
+    if (!val) showError(passwordInput, passwordError, "Please enter your password.");
+    else { clearError(passwordInput, passwordError); markValid(passwordInput); }
   });
 
-  // Form submission
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
 
-    const email = emailInput.value.trim();
+    const email    = emailInput.value.trim();
     const password = passwordInput.value;
-
     let valid = true;
 
-    if (!email) {
-      showError(emailInput, emailError, "Please enter your email address.");
-      valid = false;
-    } else if (!isValidEmail(email)) {
-      showError(emailInput, emailError, "Please enter a valid email address.");
-      valid = false;
-    }
+    if (!email) { showError(emailInput, emailError, "Please enter your email address."); valid = false; }
+    else if (!isValidEmail(email)) { showError(emailInput, emailError, "Please enter a valid email address."); valid = false; }
 
-    if (!password) {
-      showError(passwordInput, passwordError, "Please enter your password.");
-      valid = false;
-    }
+    if (!password) { showError(passwordInput, passwordError, "Please enter your password."); valid = false; }
 
     if (!valid) return;
 
     const result = loginUser(email, password);
-
     if (!result.success) {
       globalError.textContent = result.error;
       globalError.classList.add("visible");
       return;
     }
 
-    // Success — redirect to feed
     window.location.href = "feed.html";
   });
-
 }

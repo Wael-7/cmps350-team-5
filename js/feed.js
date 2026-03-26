@@ -1,15 +1,17 @@
-// ---------------------------------------------------------------
+// =============================================
 // feed.js — Feed Page Logic
-// ---------------------------------------------------------------
+// Hive Social Media Platform — CMPS 350
+// =============================================
 
 initStorage();
+initTheme();
 if (!isLoggedIn()) window.location.href = "login.html";
 
 const currentUser = getCurrentUser();
 
-// ---------------------------------------------------------------
+// =============================================
 // NAVBAR
-// ---------------------------------------------------------------
+// =============================================
 
 document.querySelector(".user-name").textContent = currentUser.username;
 const navAvatar = document.querySelector(".user-avatar");
@@ -28,18 +30,9 @@ document.querySelector(".btn-logout").addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
-// Initialize theme
-initTheme();
-
-// Theme toggle functionality
-const themeToggle = document.getElementById("themeToggle");
-themeToggle.addEventListener("click", () => {
-    toggleTheme();
-});
-
-// ---------------------------------------------------------------
+// =============================================
 // FLOATING BUTTON + MODAL
-// ---------------------------------------------------------------
+// =============================================
 
 const modal = document.getElementById("createPostModal");
 const floatingBtn = document.getElementById("fbCreatePost");
@@ -64,9 +57,9 @@ window.addEventListener("click", (e) => {
     }
 });
 
-// ---------------------------------------------------------------
+// =============================================
 // FEED
-// ---------------------------------------------------------------
+// =============================================
 
 function loadFeed() {
     const feedContainer = document.getElementById("feed");
@@ -338,9 +331,9 @@ function renderInlineComments(container, postId, toggleBtn) {
     container.appendChild(commentsList);
 }
 
-// ---------------------------------------------------------------
+// =============================================
 // DISCOVER USERS SIDEBAR
-// ---------------------------------------------------------------
+// =============================================
 
 function loadUserList() {
     const userListContainer = document.getElementById("userList");
@@ -401,9 +394,9 @@ function loadUserList() {
     });
 }
 
-// ---------------------------------------------------------------
+// =============================================
 // CREATE POST
-// ---------------------------------------------------------------
+// =============================================
 
 const createPostForm = document.getElementById("createPostForm");
 const postContentInput = document.getElementById("postContent");
@@ -423,9 +416,9 @@ createPostForm.addEventListener("submit", (e) => {
     }
 });
 
-// ---------------------------------------------------------------
+// =============================================
 // INIT
-// ---------------------------------------------------------------
+// =============================================
 
 loadFeed();
 loadUserList();
