@@ -90,14 +90,16 @@ function loadPost() {
     const deleteBtn = singlePostDiv.querySelector("#deletePostBtn");
     if (post.authorId === currentUser.id) {
         deleteBtn.style.display = "block";
-        deleteBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to delete this post?")) {
-                const result = deletePost(post.id, currentUser.id);
-                if (result.success) {
-                    window.location.href = "feed.html";
-                } else {
-                    alert("Error: " + result.error);
-                }
+        deleteBtn.addEventListener("click", async () => {
+            const confirmed = await showConfirmation("Delete this post?");
+            if (!confirmed) return;
+
+            const result = deletePost(post.id, currentUser.id);
+            if (result.success) {
+                showToast("Post deleted successfully.", "success");
+                window.location.href = `profile.html?id=${currentUser.id}`;
+            } else {
+                showToast("Error: " + result.error, "error");
             }
         });
     }
@@ -176,15 +178,17 @@ function loadComments() {
 
     // Delete comment buttons
     commentsList.querySelectorAll(".btn-delete-comment").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const commentId = btn.dataset.commentId;
-            if (confirm("Delete this comment?")) {
-                const result = deleteComment(postId, commentId, currentUser.id);
-                if (result.success) {
-                    loadComments();
-                } else {
-                    alert("Error: " + result.error);
-                }
+            const confirmed = await showConfirmation("Delete this comment?");
+            if (!confirmed) return;
+
+            const result = deleteComment(postId, commentId, currentUser.id);
+            if (result.success) {
+                showToast("Comment deleted successfully.", "success");
+                loadComments();
+            } else {
+                showToast("Error: " + result.error, "error");
             }
         });
     });

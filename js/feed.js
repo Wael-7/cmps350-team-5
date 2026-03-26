@@ -134,12 +134,17 @@ function createPostCard(post) {
     deleteBtn.className = "btn-delete";
     deleteBtn.innerHTML = "🗑️";
     deleteBtn.style.display = post.authorId === currentUser.id ? "block" : "none";
-    deleteBtn.addEventListener("click", (e) => {
+    deleteBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        if (confirm("Delete this post?")) {
-            const result = deletePost(post.id, currentUser.id);
-            if (result.success) loadFeed();
-            else alert("Error: " + result.error);
+        const confirmed = await showConfirmation("Delete this post?");
+        if (!confirmed) return;
+
+        const result = deletePost(post.id, currentUser.id);
+        if (result.success) {
+            showToast("Post deleted successfully.", "success");
+            loadFeed();
+        } else {
+            showToast("Error: " + result.error, "error");
         }
     });
 
@@ -320,17 +325,21 @@ function renderInlineComments(container, postId, toggleBtn) {
                 const deleteCommentBtn = document.createElement("button");
                 deleteCommentBtn.className = "btn-delete-inline-comment";
                 deleteCommentBtn.textContent = "🗑️";
-                deleteCommentBtn.addEventListener("click", (e) => {
+                deleteCommentBtn.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    if (confirm("Delete this comment?")) {
-                        const result = deleteComment(postId, comment.id, currentUser.id);
-                        if (result.success) {
-                            const updatedPost = getPostById(postId);
-                            const count = updatedPost.comments.length;
-                            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
-                            renderInlineComments(container, postId, toggleBtn);
-                            container.classList.add("open");
-                        }
+                    const confirmed = await showConfirmation("Delete this comment?");
+                    if (!confirmed) return;
+
+                    const result = deleteComment(postId, comment.id, currentUser.id);
+                    if (result.success) {
+                        showToast("Comment deleted successfully.", "success");
+                        const updatedPost = getPostById(postId);
+                        const count = updatedPost.comments.length;
+                        toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
+                        renderInlineComments(container, postId, toggleBtn);
+                        container.classList.add("open");
+                    } else {
+                        showToast("Error: " + result.error, "error");
                     }
                 });
                 commentHeader.appendChild(deleteCommentBtn);

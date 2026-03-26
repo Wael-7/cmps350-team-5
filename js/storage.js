@@ -322,6 +322,71 @@ function deletePost(postId, requestingUserId) {
   return { success: true };
 }
 
+// Shared toast / confirm helper (global)
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 250);
+  }, 2600);
+}
+
+function showConfirmation(message) {
+  return new Promise((resolve) => {
+    const existing = document.getElementById("confirmOverlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "confirmOverlay";
+    overlay.className = "confirm-overlay";
+
+    const box = document.createElement("div");
+    box.className = "confirm-box";
+
+    const text = document.createElement("p");
+    text.textContent = message;
+
+    const actions = document.createElement("div");
+    actions.className = "confirm-actions";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.className = "confirm-btn cancel";
+    cancelBtn.textContent = "Cancel";
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.className = "confirm-btn confirm";
+    confirmBtn.textContent = "Delete";
+
+    cancelBtn.addEventListener("click", () => {
+      overlay.remove();
+      resolve(false);
+    });
+
+    confirmBtn.addEventListener("click", () => {
+      overlay.remove();
+      resolve(true);
+    });
+
+    actions.appendChild(cancelBtn);
+    actions.appendChild(confirmBtn);
+    box.appendChild(text);
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    cancelBtn.focus();
+  });
+}
+
 // Getting a single post by ID
 function getPostById(postId) {
   const posts = getPosts();
