@@ -61,50 +61,16 @@ function displayUser() {
     document.getElementById("followersCount").textContent = targetUser.followers.length;
     document.getElementById("followingCount").textContent = targetUser.following.length;
 
-    const followBtn   = document.getElementById("followBtn");
-    const editBtn     = document.getElementById("editProfileBtn");
+    const followBtn = document.getElementById("followBtn");
+    const editBtn = document.getElementById("editProfileBtn");
 
     // Own profile
     if (currentUser.id === targetUser.id) {
-        followBtn.style.display  = "none";
-        editBtn.style.display    = "inline-block";
-
-        // Remove old listeners by cloning
-        const newEditBtn = editBtn.cloneNode(true);
-        editBtn.parentNode.replaceChild(newEditBtn, editBtn);
-
-        newEditBtn.addEventListener("click", () => {
-            const updatedUsername = prompt("Update username:", targetUser.username);
-            if (updatedUsername === null) return;
-            const usernameTrim = updatedUsername.trim();
-            if (!usernameTrim) { alert("Username cannot be empty."); return; }
-
-            const existingUser = getUserByUsername(usernameTrim);
-            if (existingUser && existingUser.id !== targetUser.id) {
-                alert("This username is already taken.");
-                return;
-            }
-
-            const updatedBio = prompt("Update bio:", targetUser.bio || "");
-            if (updatedBio === null) return;
-
-            const updatedPic = prompt("Profile picture URL (leave empty for default):", targetUser.profilePicture || "");
-            if (updatedPic === null) return;
-
-            const result = updateUserProfile(targetUser.id, {
-                username: usernameTrim,
-                bio: updatedBio.trim(),
-                profilePicture: updatedPic.trim(),
-            });
-
-            if (!result.success) { alert(result.error); return; }
-            refreshProfile();
-            alert("Profile updated!");
-        });
-
+        followBtn.style.display = "none";
+        editBtn.style.display = "inline-block";
     } else {
         // Another user's profile
-        editBtn.style.display   = "none";
+        editBtn.style.display = "none";
         followBtn.style.display = "inline-block";
 
         const alreadyFollowing = isFollowing(currentUser.id, targetUser.id);
@@ -131,41 +97,41 @@ function displayUser() {
 // =============================================
 // INLINE EDIT FORM
 // =============================================
- 
-const editFormSection  = document.getElementById("editFormSection");
+
+const editFormSection = document.getElementById("editFormSection");
 const editUsernameInput = document.getElementById("editUsername");
-const editBioInput     = document.getElementById("editBio");
-const editPicInput     = document.getElementById("editProfilePic");
+const editBioInput = document.getElementById("editBio");
+const editPicInput = document.getElementById("editProfilePic");
 const editUsernameError = document.getElementById("editUsernameError");
-const editPicError     = document.getElementById("editPicError");
-const editBtn          = document.getElementById("editProfileBtn");
-const cancelEditBtn    = document.getElementById("cancelEditBtn");
-const saveProfileBtn   = document.getElementById("saveProfileBtn");
- 
+const editPicError = document.getElementById("editPicError");
+const editBtn = document.getElementById("editProfileBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+
 // Open edit form — pre-fill with current values
 editBtn.addEventListener("click", () => {
     editUsernameInput.value = targetUser.username;
-    editBioInput.value      = targetUser.bio || "";
-    editPicInput.value      = targetUser.profilePicture || "";
+    editBioInput.value = targetUser.bio || "";
+    editPicInput.value = targetUser.profilePicture || "";
     editUsernameError.classList.remove("visible");
     editPicError.classList.remove("visible");
     editFormSection.classList.add("open");
     editFormSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
- 
+
 // Cancel — close form
 cancelEditBtn.addEventListener("click", () => {
     editFormSection.classList.remove("open");
 });
- 
+
 // Save changes
 saveProfileBtn.addEventListener("click", () => {
     const newUsername = editUsernameInput.value.trim();
-    const newBio      = editBioInput.value.trim();
-    const newPic      = editPicInput.value.trim();
- 
+    const newBio = editBioInput.value.trim();
+    const newPic = editPicInput.value.trim();
+
     let valid = true;
- 
+
     // Validate username
     if (!newUsername) {
         editUsernameError.textContent = "Username cannot be empty.";
@@ -185,7 +151,7 @@ saveProfileBtn.addEventListener("click", () => {
             editUsernameError.classList.remove("visible");
         }
     }
- 
+
     // Validate profile picture URL (optional)
     if (newPic && !newPic.startsWith("http")) {
         editPicError.textContent = "Please enter a valid URL starting with http.";
@@ -194,24 +160,37 @@ saveProfileBtn.addEventListener("click", () => {
     } else {
         editPicError.classList.remove("visible");
     }
- 
+
     if (!valid) return;
- 
+
     const result = updateUserProfile(targetUser.id, {
         username: newUsername,
         bio: newBio,
         profilePicture: newPic,
     });
- 
+
     if (!result.success) {
         editUsernameError.textContent = result.error;
         editUsernameError.classList.add("visible");
         return;
     }
- 
+
     // Close form and refresh
     editFormSection.classList.remove("open");
     refreshProfile();
+
+    // Update navbar if it's the current user
+    if (currentUser.id === targetUser.id) {
+        const updatedCurrentUser = getCurrentUser();
+        document.getElementById("navUsername").textContent = updatedCurrentUser.username;
+        const navAvatar = document.getElementById("navAvatar");
+        navAvatar.src = updatedCurrentUser.profilePicture
+            ? updatedCurrentUser.profilePicture
+            : `https://ui-avatars.com/api/?name=${updatedCurrentUser.username}&background=${getAvatarColor(updatedCurrentUser.id)}&color=fff`;
+    }
+
+    // Show success message
+    alert("Profile updated successfully!");
 });
 
 // ---------------------------------------------------------------
