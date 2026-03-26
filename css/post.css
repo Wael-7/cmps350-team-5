@@ -30,6 +30,8 @@
     background-color: var(--accent);
     color: white;
     border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(212, 168, 83, 0.2);
 }
 
 /* Main container — accounts for navbar + back bar */
@@ -55,6 +57,12 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.post-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .post-card .post-header {
@@ -148,6 +156,7 @@
     background-color: #fdf0ee;
     border-color: #e74c3c;
     color: #e74c3c;
+    transform: scale(1.05);
 }
 
 .post-card .like-btn.liked {
@@ -185,6 +194,12 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.add-comment:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(212, 168, 83, 0.15);
 }
 
 .add-comment textarea {

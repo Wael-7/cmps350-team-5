@@ -15,7 +15,7 @@ document.querySelector(".user-name").textContent = currentUser.username;
 const navAvatar = document.querySelector(".user-avatar");
 navAvatar.src = currentUser.profilePicture
     ? currentUser.profilePicture
-    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
 
 const userProfileContainer = document.querySelector(".user-profile");
 userProfileContainer.style.cursor = "pointer";
@@ -104,7 +104,7 @@ function createPostCard(post) {
     authorAvatar.className = "author-avatar";
     authorAvatar.src = author && author.profilePicture
         ? author.profilePicture
-        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
+        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=${author ? getAvatarColor(author.id) : "d4a853"}&color=fff`;
     authorAvatar.style.cursor = "pointer";
     authorAvatar.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -226,7 +226,7 @@ function renderInlineComments(container, postId, toggleBtn) {
     inputAvatar.className = "comment-input-avatar";
     inputAvatar.src = currentUser.profilePicture
         ? currentUser.profilePicture
-        : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+        : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
 
     const inputWrapper = document.createElement("div");
     inputWrapper.className = "comment-input-wrapper";
@@ -289,7 +289,7 @@ function renderInlineComments(container, postId, toggleBtn) {
             commentAvatar.className = "inline-comment-avatar";
             commentAvatar.src = commentAuthor && commentAuthor.profilePicture
                 ? commentAuthor.profilePicture
-                : `https://ui-avatars.com/api/?name=${commentAuthor ? commentAuthor.username : "Unknown"}&background=d4a853&color=fff`;
+                : `https://ui-avatars.com/api/?name=${commentAuthor ? commentAuthor.username : "Unknown"}&background=${commentAuthor ? getAvatarColor(commentAuthor.id) : "d4a853"}&color=fff`;
 
             const bubble = document.createElement("div");
             bubble.className = "inline-comment-bubble";
@@ -372,7 +372,7 @@ function loadUserList() {
         avatar.className = "user-avatar-small";
         avatar.src = user.profilePicture
             ? user.profilePicture
-            : `https://ui-avatars.com/api/?name=${user.username}&background=d4a853&color=fff`;
+            : `https://ui-avatars.com/api/?name=${user.username}&background=${getAvatarColor(user.id)}&color=fff`;
 
         const name = document.createElement("span");
         name.className = "user-name-small";

@@ -88,8 +88,8 @@ body {
 }
 
 .brand-logo {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     background-color: var(--text-primary);
     border-radius: 8px;
     display: flex;
@@ -98,8 +98,8 @@ body {
 }
 
 .brand-logo svg {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     fill: var(--accent);
 }
 
@@ -239,14 +239,15 @@ body {
     border-radius: 14px;
     padding: 20px;
     box-shadow: var(--shadow);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
 }
 
 .card:hover {
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
     border-color: var(--accent);
+    transform: translateY(-3px);
 }
 
 .post-header {
@@ -343,6 +344,7 @@ body {
     background-color: #fdf0ee;
     border-color: #e74c3c;
     color: #e74c3c;
+    transform: scale(1.05);
 }
 
 .like-btn.liked {
@@ -376,6 +378,7 @@ body {
     background-color: var(--surface);
     border-color: var(--accent);
     color: var(--accent);
+    transform: scale(1.05);
 }
 
 .btn-toggle-comments.active {
@@ -391,8 +394,16 @@ body {
 .inline-comments {
     display: none;
     margin-top: 16px;
-    border-top: 1px solid var(--border);
-    padding-top: 16px;
+    border-top: 2px solid var(--border);
+    padding: 16px 0 0 0;
+    background-color: rgba(212, 168, 83, 0.02);
+    border-radius: 0 0 14px 14px;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
 }
 
 .inline-comments.open {
@@ -465,6 +476,8 @@ body {
 
 .btn-submit-inline-comment:hover {
     background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(193, 127, 36, 0.25);
 }
 
 /* Comments list */
@@ -593,15 +606,19 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
     background-color: var(--bg);
-    border: 1px solid var(--border);
-    transition: background 0.2s;
+    border: 1.5px solid var(--border);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .user-card:hover {
-    background-color: #edeae3;
+    background-color: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateX(2px);
 }
 
 .user-info {
@@ -669,19 +686,20 @@ body {
     position: fixed;
     bottom: 28px;
     right: 28px;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
+    padding: 12px 20px;
+    border-radius: 25px;
     background-color: var(--panel-bg);
     color: white;
     border: none;
-    font-size: 1.8rem;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 16px rgba(193, 127, 36, 0.4);
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     z-index: 50;
 }
 

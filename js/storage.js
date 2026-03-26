@@ -48,6 +48,30 @@ function generateId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
 
+// Color palette for user avatars
+const AVATAR_COLORS = [
+  "d4a853", // Golden
+  "e74c3c", // Red
+  "3498db", // Blue
+  "2ecc71", // Green
+  "f39c12", // Orange
+  "9b59b6", // Purple
+  "1abc9c", // Turquoise
+  "e67e22", // Dark Orange
+  "34495e", // Dark Blue Gray
+  "16a085", // Dark Turquoise
+];
+
+function getAvatarColor(userId) {
+  // Generate a consistent color for each user based on their ID
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+}
+
 //------------------------------------------------------------------
 // SESSION MANAGEMENT
 // Tracks which user is currently logged in

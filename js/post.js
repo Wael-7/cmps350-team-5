@@ -12,7 +12,7 @@ document.querySelector(".user-name").textContent = currentUser.username;
 const avatar = document.querySelector(".user-avatar");
 avatar.src = currentUser.profilePicture
     ? currentUser.profilePicture
-    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
 
 const userProfileContainer = document.querySelector(".user-profile");
 userProfileContainer.style.cursor = "pointer";
@@ -65,7 +65,7 @@ function loadPost() {
     const authorAvatar = singlePostDiv.querySelector(".author-avatar");
     authorAvatar.src = author && author.profilePicture
         ? author.profilePicture
-        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`;
+        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=${author ? getAvatarColor(author.id) : "d4a853"}&color=fff`;
     authorAvatar.style.cursor = "pointer";
     authorAvatar.addEventListener("click", () => {
         if (author) window.location.href = `profile.html?id=${author.id}`;
@@ -157,7 +157,7 @@ function loadComments() {
                     class="comment-avatar"
                     src="${author && author.profilePicture
                         ? author.profilePicture
-                        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=d4a853&color=fff`}"
+                        : `https://ui-avatars.com/api/?name=${author ? author.username : "Unknown"}&background=${author ? getAvatarColor(author.id) : "d4a853"}&color=fff`}"
                     alt="avatar"
                 />
                 <div class="comment-meta">

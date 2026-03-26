@@ -16,7 +16,7 @@ document.getElementById("navUsername").textContent = currentUser.username;
 const navAvatar = document.getElementById("navAvatar");
 navAvatar.src = currentUser.profilePicture
     ? currentUser.profilePicture
-    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=d4a853&color=fff`;
+    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
 
 const navUserProfile = document.getElementById("navUserProfile");
 navUserProfile.style.cursor = "pointer";
@@ -53,7 +53,7 @@ function displayUser() {
     const profilePic = document.getElementById("profilePic");
     profilePic.src = targetUser.profilePicture
         ? targetUser.profilePicture
-        : `https://ui-avatars.com/api/?name=${targetUser.username}&background=d4a853&color=fff`;
+        : `https://ui-avatars.com/api/?name=${targetUser.username}&background=${getAvatarColor(targetUser.id)}&color=fff`;
 
     // Username, bio, stats
     document.getElementById("username").textContent = targetUser.username;
