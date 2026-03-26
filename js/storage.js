@@ -6,6 +6,7 @@ const KEYS = {
   USERS: "sm_users",
   POSTS: "sm_posts",
   CURRENT_USER: "sm_current_user",
+  THEME: "sm_theme",
 };
 
 //------------------------------------------------------------------
@@ -68,6 +69,31 @@ function logoutUser() {
 
 function isLoggedIn() {
   return localStorage.getItem(KEYS.CURRENT_USER) !== null;
+}
+
+//------------------------------------------------------------------
+// THEME MANAGEMENT
+//------------------------------------------------------------------
+
+function setTheme(theme) {
+  localStorage.setItem(KEYS.THEME, theme);
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function getTheme() {
+  return localStorage.getItem(KEYS.THEME) || 'light';
+}
+
+function toggleTheme() {
+  const currentTheme = getTheme();
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  setTheme(newTheme);
+  return newTheme;
+}
+
+function initTheme() {
+  const theme = getTheme();
+  document.documentElement.setAttribute('data-theme', theme);
 }
 
 //------------------------------------------------------------------

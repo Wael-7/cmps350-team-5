@@ -29,6 +29,15 @@ document.getElementById("navLogout").addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
+// Initialize theme
+initTheme();
+
+// Theme toggle functionality
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
+    toggleTheme();
+});
+
 // ---------------------------------------------------------------
 // DISPLAY PROFILE
 // ---------------------------------------------------------------

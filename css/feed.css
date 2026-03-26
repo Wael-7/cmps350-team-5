@@ -3,6 +3,7 @@
 --------------------------------------------------------------- */
 
 :root {
+    /* Light theme (default) */
     --bg: #f5f4f0;
     --surface: #ffffff;
     --border: #e2e0d9;
@@ -16,6 +17,22 @@
     --success: #27ae60;
     --radius: 10px;
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --bg: #1a1a1a;
+    --surface: #2d2d2d;
+    --border: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --accent: #d4a853;
+    --accent-hover: #e6b85a;
+    --panel-bg: #3d3d3d;
+    --error: #ff6b6b;
+    --error-bg: #2d1a1a;
+    --success: #51cf66;
+    --shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 *,
@@ -146,6 +163,30 @@ body {
 
 .btn-logout:hover {
     background-color: var(--accent-hover);
+}
+
+/* Dark mode toggle */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    color: var(--text-primary);
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg);
+}
+
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
 }
 
 /* ---------------------------------------------------------------

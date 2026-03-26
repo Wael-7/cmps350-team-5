@@ -1,4 +1,5 @@
 :root {
+    /* Light theme (default) */
     --bg: #f5f4f0;
     --surface: #ffffff;
     --border: #e2e0d9;
@@ -8,6 +9,18 @@
     --accent-hover: #c49843;
     --radius: 10px;
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --bg: #1a1a1a;
+    --surface: #2d2d2d;
+    --border: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --accent: #d4a853;
+    --accent-hover: #e6b85a;
+    --shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* Layout adjustments for profile page */
