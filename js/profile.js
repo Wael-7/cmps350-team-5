@@ -1,22 +1,16 @@
-// =============================================
-// profile.js — Profile Page Logic
-// Hive Social Media Platform — CMPS 350
-// =============================================
-
 initStorage();
-initTheme();
-
 if (!isLoggedIn()) window.location.href = "login.html";
 
 const currentUser = getCurrentUser();
 
 const params = new URLSearchParams(window.location.search);
 let targetUserId = params.get("id") || currentUser.id;
+
 let targetUser = getUserById(targetUserId);
 
-// =============================================
+// ---------------------------------------------------------------
 // NAVBAR
-// =============================================
+// ---------------------------------------------------------------
 
 document.getElementById("navUsername").textContent = currentUser.username;
 const navAvatar = document.getElementById("navAvatar");
@@ -35,14 +29,18 @@ document.getElementById("navLogout").addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
-// Theme toggle
-document.getElementById("themeToggle").addEventListener("click", () => {
+// Initialize theme
+initTheme();
+
+// Theme toggle functionality
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
     toggleTheme();
 });
 
-// =============================================
+// ---------------------------------------------------------------
 // DISPLAY PROFILE
-// =============================================
+// ---------------------------------------------------------------
 
 function displayUser() {
     if (!targetUser) {
@@ -52,35 +50,68 @@ function displayUser() {
     }
 
     // Profile picture
-    document.getElementById("profilePic").src = targetUser.profilePicture
+    const profilePic = document.getElementById("profilePic");
+    profilePic.src = targetUser.profilePicture
         ? targetUser.profilePicture
         : `https://ui-avatars.com/api/?name=${targetUser.username}&background=d4a853&color=fff`;
 
-    // Info
+    // Username, bio, stats
     document.getElementById("username").textContent = targetUser.username;
     document.getElementById("bio").textContent = targetUser.bio || "No bio yet.";
     document.getElementById("followersCount").textContent = targetUser.followers.length;
     document.getElementById("followingCount").textContent = targetUser.following.length;
 
-    const followBtn = document.getElementById("followBtn");
-    const editBtn   = document.getElementById("editProfileBtn");
+    const followBtn   = document.getElementById("followBtn");
+    const editBtn     = document.getElementById("editProfileBtn");
 
+    // Own profile
     if (currentUser.id === targetUser.id) {
-        // Own profile — show Edit, hide Follow
-        followBtn.style.display = "none";
-        editBtn.style.display   = "inline-block";
+        followBtn.style.display  = "none";
+        editBtn.style.display    = "inline-block";
+
+        // Remove old listeners by cloning
+        const newEditBtn = editBtn.cloneNode(true);
+        editBtn.parentNode.replaceChild(newEditBtn, editBtn);
+
+        newEditBtn.addEventListener("click", () => {
+            const updatedUsername = prompt("Update username:", targetUser.username);
+            if (updatedUsername === null) return;
+            const usernameTrim = updatedUsername.trim();
+            if (!usernameTrim) { alert("Username cannot be empty."); return; }
+
+            const existingUser = getUserByUsername(usernameTrim);
+            if (existingUser && existingUser.id !== targetUser.id) {
+                alert("This username is already taken.");
+                return;
+            }
+
+            const updatedBio = prompt("Update bio:", targetUser.bio || "");
+            if (updatedBio === null) return;
+
+            const updatedPic = prompt("Profile picture URL (leave empty for default):", targetUser.profilePicture || "");
+            if (updatedPic === null) return;
+
+            const result = updateUserProfile(targetUser.id, {
+                username: usernameTrim,
+                bio: updatedBio.trim(),
+                profilePicture: updatedPic.trim(),
+            });
+
+            if (!result.success) { alert(result.error); return; }
+            refreshProfile();
+            alert("Profile updated!");
+        });
+
     } else {
-        // Other user — show Follow/Unfollow, hide Edit
+        // Another user's profile
         editBtn.style.display   = "none";
         followBtn.style.display = "inline-block";
 
         const alreadyFollowing = isFollowing(currentUser.id, targetUser.id);
         followBtn.textContent = alreadyFollowing ? "Unfollow" : "Follow";
-        followBtn.style.backgroundColor = alreadyFollowing
-            ? "var(--text-secondary)"
-            : "";
+        followBtn.style.backgroundColor = alreadyFollowing ? "var(--text-secondary)" : "";
 
-        // Remove stale listeners
+        // Remove old listeners by cloning
         const newFollowBtn = followBtn.cloneNode(true);
         followBtn.parentNode.replaceChild(newFollowBtn, followBtn);
 
@@ -97,95 +128,9 @@ function displayUser() {
     renderUserPosts();
 }
 
-// =============================================
-// INLINE EDIT FORM
-// =============================================
-
-const editFormSection  = document.getElementById("editFormSection");
-const editUsernameInput = document.getElementById("editUsername");
-const editBioInput     = document.getElementById("editBio");
-const editPicInput     = document.getElementById("editProfilePic");
-const editUsernameError = document.getElementById("editUsernameError");
-const editPicError     = document.getElementById("editPicError");
-const editBtn          = document.getElementById("editProfileBtn");
-const cancelEditBtn    = document.getElementById("cancelEditBtn");
-const saveProfileBtn   = document.getElementById("saveProfileBtn");
-
-// Open edit form — pre-fill with current values
-editBtn.addEventListener("click", () => {
-    editUsernameInput.value = targetUser.username;
-    editBioInput.value      = targetUser.bio || "";
-    editPicInput.value      = targetUser.profilePicture || "";
-    editUsernameError.classList.remove("visible");
-    editPicError.classList.remove("visible");
-    editFormSection.classList.add("open");
-    editFormSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
-});
-
-// Cancel — close form
-cancelEditBtn.addEventListener("click", () => {
-    editFormSection.classList.remove("open");
-});
-
-// Save changes
-saveProfileBtn.addEventListener("click", () => {
-    const newUsername = editUsernameInput.value.trim();
-    const newBio      = editBioInput.value.trim();
-    const newPic      = editPicInput.value.trim();
-
-    let valid = true;
-
-    // Validate username
-    if (!newUsername) {
-        editUsernameError.textContent = "Username cannot be empty.";
-        editUsernameError.classList.add("visible");
-        valid = false;
-    } else if (!/^[a-zA-Z0-9_]{3,30}$/.test(newUsername)) {
-        editUsernameError.textContent = "3–30 characters. Letters, numbers, underscores only.";
-        editUsernameError.classList.add("visible");
-        valid = false;
-    } else {
-        const existing = getUserByUsername(newUsername);
-        if (existing && existing.id !== targetUser.id) {
-            editUsernameError.textContent = "This username is already taken.";
-            editUsernameError.classList.add("visible");
-            valid = false;
-        } else {
-            editUsernameError.classList.remove("visible");
-        }
-    }
-
-    // Validate profile picture URL (optional)
-    if (newPic && !newPic.startsWith("http")) {
-        editPicError.textContent = "Please enter a valid URL starting with http.";
-        editPicError.classList.add("visible");
-        valid = false;
-    } else {
-        editPicError.classList.remove("visible");
-    }
-
-    if (!valid) return;
-
-    const result = updateUserProfile(targetUser.id, {
-        username: newUsername,
-        bio: newBio,
-        profilePicture: newPic,
-    });
-
-    if (!result.success) {
-        editUsernameError.textContent = result.error;
-        editUsernameError.classList.add("visible");
-        return;
-    }
-
-    // Close form and refresh
-    editFormSection.classList.remove("open");
-    refreshProfile();
-});
-
-// =============================================
+// ---------------------------------------------------------------
 // USER POSTS
-// =============================================
+// ---------------------------------------------------------------
 
 function renderUserPosts() {
     const postsContainer = document.getElementById("userPosts");
@@ -219,30 +164,26 @@ function renderUserPosts() {
     });
 }
 
-// =============================================
+// ---------------------------------------------------------------
 // REFRESH
-// =============================================
+// ---------------------------------------------------------------
 
 function refreshProfile() {
     targetUser = getUserById(targetUserId);
     if (!targetUser) return;
-
-    // Update navbar username in case it changed
-    document.getElementById("navUsername").textContent = currentUser.username;
-
     displayUser();
 }
 
-// =============================================
+// ---------------------------------------------------------------
 // BACK BUTTON
-// =============================================
+// ---------------------------------------------------------------
 
 document.getElementById("backToFeedBtn").addEventListener("click", () => {
     window.location.href = "feed.html";
 });
 
-// =============================================
+// ---------------------------------------------------------------
 // INIT
-// =============================================
+// ---------------------------------------------------------------
 
 displayUser();

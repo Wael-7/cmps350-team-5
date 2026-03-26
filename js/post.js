@@ -1,18 +1,12 @@
-// ============================================================
-// post.js — Single post page logic
-// Hive Social Media Platform — CMPS 350
-// ============================================================
-
 // Initialize storage and get current user
 initStorage();
-initTheme();
 if (!isLoggedIn()) window.location.href = "login.html";
 
 const currentUser = getCurrentUser();
 
-// ============================================================
+// ---------------------------------------------------------------
 // NAVBAR SETUP
-// ============================================================
+// ---------------------------------------------------------------
 
 document.querySelector(".user-name").textContent = currentUser.username;
 const avatar = document.querySelector(".user-avatar");
@@ -31,16 +25,25 @@ document.querySelector(".btn-logout").addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
-// ============================================================
+// Initialize theme
+initTheme();
+
+// Theme toggle functionality
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
+    toggleTheme();
+});
+
+// ---------------------------------------------------------------
 // GET POST ID FROM URL
-// ============================================================
+// ---------------------------------------------------------------
 
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get("id");
 
-// ============================================================
+// ---------------------------------------------------------------
 // LOAD AND DISPLAY POST
-// ============================================================
+// ---------------------------------------------------------------
 
 function loadPost() {
     if (!postId) {
@@ -103,9 +106,9 @@ function loadPost() {
     loadComments();
 }
 
-// ============================================================
+// ---------------------------------------------------------------
 // LIKE BUTTON
-// ============================================================
+// ---------------------------------------------------------------
 
 function updateLikeButton(post) {
     const likeBtn = document.getElementById("likeBtn");
@@ -129,9 +132,9 @@ function updateLikeButton(post) {
     };
 }
 
-// ============================================================
+// ---------------------------------------------------------------
 // COMMENTS
-// ============================================================
+// ---------------------------------------------------------------
 
 function loadComments() {
     const post = getPostById(postId);
@@ -216,8 +219,5 @@ document.getElementById("commentInput").addEventListener("keydown", (e) => {
     }
 });
 
-// ============================================================
-// INIT
-// ============================================================
-
+//Initialize page by loading the post
 loadPost();

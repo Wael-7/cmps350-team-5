@@ -1,9 +1,9 @@
-/* =============================================
+/* ---------------------------------------------------------------
    feed.css — Feed Page Styles
-   Hive Social Media Platform — CMPS 350
-============================================= */
+--------------------------------------------------------------- */
 
 :root {
+    /* Light theme (default) */
     --bg: #f5f4f0;
     --surface: #ffffff;
     --border: #e2e0d9;
@@ -19,29 +19,20 @@
     --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
 
-/* Dark mode */
+/* Dark theme */
 [data-theme="dark"] {
     --bg: #1a1a1a;
     --surface: #2d2d2d;
     --border: #404040;
-    --text-primary: #f0ede8;
-    --text-secondary: #a0998f;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
     --accent: #d4a853;
     --accent-hover: #e6b85a;
-    --panel-bg: #c17f24;
-    --error: #e05c4b;
-    --error-bg: #3a1f1a;
-    --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
-}
-
-[data-theme="dark"] .inline-comment-bubble {
-    background-color: #242424;
-}
-
-[data-theme="dark"] .comment-input-wrapper textarea,
-[data-theme="dark"] #createPostForm textarea {
-    background-color: #242424;
-    color: var(--text-primary);
+    --panel-bg: #3d3d3d;
+    --error: #ff6b6b;
+    --error-bg: #2d1a1a;
+    --success: #51cf66;
+    --shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 *,
@@ -63,9 +54,9 @@ body {
     min-height: 100vh;
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    NAVBAR
-============================================= */
+--------------------------------------------------------------- */
 
 .navbar {
     position: fixed;
@@ -174,31 +165,33 @@ body {
     background-color: var(--accent-hover);
 }
 
-/* Theme toggle button */
+/* Dark mode toggle */
 .theme-toggle {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
     background: none;
-    border: 1.5px solid var(--border);
+    border: none;
     cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
-    transition: all 0.2s;
-    flex-shrink: 0;
+    transition: background-color 0.2s;
+    color: var(--text-primary);
 }
 
 .theme-toggle:hover {
     background-color: var(--bg);
-    color: var(--accent);
-    border-color: var(--accent);
 }
 
-/* =============================================
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* ---------------------------------------------------------------
    MAIN LAYOUT — Two column
-============================================= */
+--------------------------------------------------------------- */
 
 .main-layout {
     margin-top: 56px;
@@ -219,9 +212,9 @@ body {
     }
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    FEED COLUMN
-============================================= */
+--------------------------------------------------------------- */
 
 .feed-column {
     display: flex;
@@ -236,9 +229,9 @@ body {
     gap: 16px;
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    POST CARD
-============================================= */
+--------------------------------------------------------------- */
 
 .card {
     background-color: var(--surface);
@@ -391,9 +384,9 @@ body {
     color: var(--panel-bg);
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    INLINE COMMENTS SECTION
-============================================= */
+--------------------------------------------------------------- */
 
 .inline-comments {
     display: none;
@@ -554,9 +547,9 @@ body {
     padding: 8px 0;
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    SIDEBAR
-============================================= */
+--------------------------------------------------------------- */
 
 .sidebar {
     display: flex;
@@ -668,9 +661,9 @@ body {
     border-color: var(--error);
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    FLOATING BUTTON
-============================================= */
+--------------------------------------------------------------- */
 
 .floatingButton {
     position: fixed;
@@ -703,9 +696,9 @@ body {
     cursor: not-allowed;
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    CREATE POST MODAL
-============================================= */
+--------------------------------------------------------------- */
 
 .modal {
     display: none;
@@ -837,9 +830,9 @@ body {
     background-color: var(--accent-hover);
 }
 
-/* =============================================
+/* ---------------------------------------------------------------
    HIDDEN UTILITY
-============================================= */
+--------------------------------------------------------------- */
 
 .hidden {
     display: none !important;
