@@ -374,14 +374,14 @@ body {
 
 .btn-toggle-comments:hover {
     background-color: var(--surface);
-    border-color: var(--panel-bg);
-    color: var(--panel-bg);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .btn-toggle-comments.active {
     background-color: var(--surface);
-    border-color: var(--panel-bg);
-    color: var(--panel-bg);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 /* ---------------------------------------------------------------

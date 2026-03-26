@@ -147,16 +147,21 @@ function renderUserPosts() {
     posts.forEach((post) => {
         const postCard = document.createElement("div");
         postCard.className = "post-card";
-        postCard.addEventListener("click", () => {
+        postCard.style.cursor = "pointer";
+        postCard.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             window.location.href = `post.html?id=${post.id}`;
         });
 
         const content = document.createElement("p");
         content.textContent = post.content;
+        content.style.pointerEvents = "none"; // Prevent content from intercepting clicks
 
         const meta = document.createElement("div");
         meta.className = "post-meta";
         meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
+        meta.style.pointerEvents = "none"; // Prevent meta from intercepting clicks
 
         postCard.appendChild(content);
         postCard.appendChild(meta);

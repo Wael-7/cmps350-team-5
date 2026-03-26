@@ -201,6 +201,14 @@ function createPostCard(post) {
     card.appendChild(footer);
     card.appendChild(inlineComments);
 
+    // Add click event to navigate to post page
+    card.addEventListener("click", (e) => {
+        // Only navigate if not clicking on interactive elements
+        if (!e.target.closest('.btn-delete, .like-btn, .btn-toggle-comments, .author-avatar, .author-name')) {
+            window.location.href = `post.html?id=${post.id}`;
+        }
+    });
+
     return card;
 }
 
