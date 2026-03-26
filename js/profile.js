@@ -129,6 +129,89 @@ function displayUser() {
 }
 
 // ---------------------------------------------------------------
+// INLINE EDIT FORM
+// ---------------------------------------------------------------
+
+const editFormSection   = document.getElementById("editFormSection");
+const editUsernameInput = document.getElementById("editUsername");
+const editBioInput      = document.getElementById("editBio");
+const editPicInput      = document.getElementById("editProfilePic");
+const editUsernameError = document.getElementById("editUsernameError");
+const editPicError      = document.getElementById("editPicError");
+const editBtn           = document.getElementById("editProfileBtn");
+const cancelEditBtn     = document.getElementById("cancelEditBtn");
+const saveProfileBtn    = document.getElementById("saveProfileBtn");
+
+// Open edit form — pre-fill with current values
+editBtn.addEventListener("click", () => {
+    editUsernameInput.value = targetUser.username;
+    editBioInput.value      = targetUser.bio || "";
+    editPicInput.value      = targetUser.profilePicture || "";
+    editUsernameError.classList.remove("visible");
+    editPicError.classList.remove("visible");
+    editFormSection.classList.add("open");
+    editFormSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+// Cancel — close form
+cancelEditBtn.addEventListener("click", () => {
+    editFormSection.classList.remove("open");
+});
+
+// Save changes
+saveProfileBtn.addEventListener("click", () => {
+    const newUsername = editUsernameInput.value.trim();
+    const newBio      = editBioInput.value.trim();
+    const newPic      = editPicInput.value.trim();
+
+    let valid = true;
+
+    if (!newUsername) {
+        editUsernameError.textContent = "Username cannot be empty.";
+        editUsernameError.classList.add("visible");
+        valid = false;
+    } else if (!/^[a-zA-Z0-9_]{3,30}$/.test(newUsername)) {
+        editUsernameError.textContent = "3–30 characters. Letters, numbers, underscores only.";
+        editUsernameError.classList.add("visible");
+        valid = false;
+    } else {
+        const existing = getUserByUsername(newUsername);
+        if (existing && existing.id !== targetUser.id) {
+            editUsernameError.textContent = "This username is already taken.";
+            editUsernameError.classList.add("visible");
+            valid = false;
+        } else {
+            editUsernameError.classList.remove("visible");
+        }
+    }
+
+    if (newPic && !newPic.startsWith("http")) {
+        editPicError.textContent = "Please enter a valid URL starting with http.";
+        editPicError.classList.add("visible");
+        valid = false;
+    } else {
+        editPicError.classList.remove("visible");
+    }
+
+    if (!valid) return;
+
+    const result = updateUserProfile(targetUser.id, {
+        username: newUsername,
+        bio: newBio,
+        profilePicture: newPic,
+    });
+
+    if (!result.success) {
+        editUsernameError.textContent = result.error;
+        editUsernameError.classList.add("visible");
+        return;
+    }
+
+    editFormSection.classList.remove("open");
+    refreshProfile();
+});
+
+// ---------------------------------------------------------------
 // USER POSTS
 // ---------------------------------------------------------------
 
