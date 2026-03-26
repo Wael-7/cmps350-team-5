@@ -128,20 +128,20 @@ function displayUser() {
     renderUserPosts();
 }
 
-// ---------------------------------------------------------------
+// =============================================
 // INLINE EDIT FORM
-// ---------------------------------------------------------------
-
-const editFormSection   = document.getElementById("editFormSection");
+// =============================================
+ 
+const editFormSection  = document.getElementById("editFormSection");
 const editUsernameInput = document.getElementById("editUsername");
-const editBioInput      = document.getElementById("editBio");
-const editPicInput      = document.getElementById("editProfilePic");
+const editBioInput     = document.getElementById("editBio");
+const editPicInput     = document.getElementById("editProfilePic");
 const editUsernameError = document.getElementById("editUsernameError");
-const editPicError      = document.getElementById("editPicError");
-const editBtn           = document.getElementById("editProfileBtn");
-const cancelEditBtn     = document.getElementById("cancelEditBtn");
-const saveProfileBtn    = document.getElementById("saveProfileBtn");
-
+const editPicError     = document.getElementById("editPicError");
+const editBtn          = document.getElementById("editProfileBtn");
+const cancelEditBtn    = document.getElementById("cancelEditBtn");
+const saveProfileBtn   = document.getElementById("saveProfileBtn");
+ 
 // Open edit form — pre-fill with current values
 editBtn.addEventListener("click", () => {
     editUsernameInput.value = targetUser.username;
@@ -152,20 +152,21 @@ editBtn.addEventListener("click", () => {
     editFormSection.classList.add("open");
     editFormSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
-
+ 
 // Cancel — close form
 cancelEditBtn.addEventListener("click", () => {
     editFormSection.classList.remove("open");
 });
-
+ 
 // Save changes
 saveProfileBtn.addEventListener("click", () => {
     const newUsername = editUsernameInput.value.trim();
     const newBio      = editBioInput.value.trim();
     const newPic      = editPicInput.value.trim();
-
+ 
     let valid = true;
-
+ 
+    // Validate username
     if (!newUsername) {
         editUsernameError.textContent = "Username cannot be empty.";
         editUsernameError.classList.add("visible");
@@ -184,7 +185,8 @@ saveProfileBtn.addEventListener("click", () => {
             editUsernameError.classList.remove("visible");
         }
     }
-
+ 
+    // Validate profile picture URL (optional)
     if (newPic && !newPic.startsWith("http")) {
         editPicError.textContent = "Please enter a valid URL starting with http.";
         editPicError.classList.add("visible");
@@ -192,21 +194,22 @@ saveProfileBtn.addEventListener("click", () => {
     } else {
         editPicError.classList.remove("visible");
     }
-
+ 
     if (!valid) return;
-
+ 
     const result = updateUserProfile(targetUser.id, {
         username: newUsername,
         bio: newBio,
         profilePicture: newPic,
     });
-
+ 
     if (!result.success) {
         editUsernameError.textContent = result.error;
         editUsernameError.classList.add("visible");
         return;
     }
-
+ 
+    // Close form and refresh
     editFormSection.classList.remove("open");
     refreshProfile();
 });
