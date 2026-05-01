@@ -1,4 +1,4 @@
-import { userRepository } from '@/lib/repository.mjs'
+import { userRepository } from '@/repos/repository.mjs'
 import { NextResponse } from 'next/server'
 
 export async function GET() {

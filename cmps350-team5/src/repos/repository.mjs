@@ -1,4 +1,4 @@
-import { prisma } from './prisma.mjs'
+import { prisma } from '@/lib/prisma.js'
 
 // ============================================
 // USER REPOSITORY
