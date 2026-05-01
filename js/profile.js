@@ -1,48 +1,73 @@
-initStorage();
-if (!isLoggedIn()) window.location.href = "login.html";
-
-const currentUser = getCurrentUser();
+const currentUserId = getCurrentUserId();
+if (!currentUserId) window.location.href = "login.html";
 
 const params = new URLSearchParams(window.location.search);
-let targetUserId = params.get("id") || currentUser.id;
+let targetUserId = params.get("id") || currentUserId;
 
-let targetUser = getUserById(targetUserId);
+let currentUser = null;
+let targetUser = null;
 
 // ---------------------------------------------------------------
 // NAVBAR
 // ---------------------------------------------------------------
 
-document.getElementById("navUsername").textContent = currentUser.username;
-const navAvatar = document.getElementById("navAvatar");
-navAvatar.src = currentUser.profilePicture
-    ? currentUser.profilePicture
-    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
+function setupNavbar() {
+    document.getElementById("navUsername").textContent = currentUser.username;
+    const navAvatar = document.getElementById("navAvatar");
+    navAvatar.src = currentUser.profilePicture
+        ? currentUser.profilePicture
+        : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
 
-const navUserProfile = document.getElementById("navUserProfile");
-navUserProfile.style.cursor = "pointer";
-navUserProfile.addEventListener("click", () => {
-    window.location.href = `profile.html?id=${currentUser.id}`;
-});
+    const navUserProfile = document.getElementById("navUserProfile");
+    navUserProfile.style.cursor = "pointer";
+    navUserProfile.addEventListener("click", () => {
+        window.location.href = `profile.html?id=${currentUser.id}`;
+    });
 
-document.getElementById("navLogout").addEventListener("click", () => {
-    logoutUser();
-    window.location.href = "login.html";
-});
+    document.getElementById("navLogout").addEventListener("click", () => {
+        logoutUser();
+        window.location.href = "login.html";
+    });
 
-// Initialize theme
-initTheme();
+    // Initialize theme
+    initTheme();
 
-// Theme toggle functionality
-const themeToggle = document.getElementById("themeToggle");
-themeToggle.addEventListener("click", () => {
-    toggleTheme();
-});
+    // Theme toggle functionality
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+        toggleTheme();
+    });
+}
+
+// Initialize page
+async function initPage() {
+    try {
+        const response = await fetch(`/api/users/${currentUserId}`);
+        if (!response.ok) throw new Error('Failed to load user');
+        currentUser = await response.json();
+
+        // Setup navbar with current user data
+        setupNavbar();
+
+        // Now fetch target user
+        const targetResponse = await fetch(`/api/users/${targetUserId}`);
+        if (!targetResponse.ok) throw new Error('User not found');
+        targetUser = await targetResponse.json();
+
+        await displayUser();
+    } catch (error) {
+        console.error('Failed to initialize page:', error);
+        window.location.href = "login.html";
+    }
+}
+
+initPage();
 
 // ---------------------------------------------------------------
 // DISPLAY PROFILE
 // ---------------------------------------------------------------
 
-function displayUser() {
+async function displayUser() {
     if (!targetUser) {
         document.querySelector(".profile-container").innerHTML =
             "<p style='text-align:center;color:#999;padding:40px;'>User not found.</p>";
@@ -73,7 +98,7 @@ function displayUser() {
         editBtn.style.display = "none";
         followBtn.style.display = "inline-block";
 
-        const alreadyFollowing = isFollowing(currentUser.id, targetUser.id);
+        const alreadyFollowing = targetUser.followers.includes(currentUser.id);
         followBtn.textContent = alreadyFollowing ? "Unfollow" : "Follow";
         followBtn.style.backgroundColor = alreadyFollowing ? "var(--text-secondary)" : "";
 
@@ -81,17 +106,27 @@ function displayUser() {
         const newFollowBtn = followBtn.cloneNode(true);
         followBtn.parentNode.replaceChild(newFollowBtn, followBtn);
 
-        newFollowBtn.addEventListener("click", () => {
-            const result = isFollowing(currentUser.id, targetUser.id)
-                ? unfollowUser(currentUser.id, targetUser.id)
-                : followUser(currentUser.id, targetUser.id);
-
-            if (!result.success) { alert(result.error); return; }
-            refreshProfile();
+        newFollowBtn.addEventListener("click", async () => {
+            try {
+                const isCurrentlyFollowing = targetUser.followers.includes(currentUser.id);
+                const endpoint = isCurrentlyFollowing ? 'unfollow' : 'follow';
+                const response = await fetch(`/api/users/${targetUser.id}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ followerId: currentUser.id }),
+                });
+                if (response.ok) {
+                    await refreshProfile();
+                } else {
+                    alert('Failed to update follow status');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
         });
     }
 
-    renderUserPosts();
+    await renderUserPosts();
 }
 
 // =============================================
@@ -125,7 +160,7 @@ cancelEditBtn.addEventListener("click", () => {
 });
 
 // Save changes
-saveProfileBtn.addEventListener("click", () => {
+saveProfileBtn.addEventListener("click", async () => {
     const newUsername = editUsernameInput.value.trim();
     const newBio = editBioInput.value.trim();
     const newPic = editPicInput.value.trim();
@@ -141,15 +176,25 @@ saveProfileBtn.addEventListener("click", () => {
         editUsernameError.textContent = "3–30 characters. Letters, numbers, underscores only.";
         editUsernameError.classList.add("visible");
         valid = false;
-    } else {
-        const existing = getUserByUsername(newUsername);
-        if (existing && existing.id !== targetUser.id) {
-            editUsernameError.textContent = "This username is already taken.";
-            editUsernameError.classList.add("visible");
-            valid = false;
-        } else {
-            editUsernameError.classList.remove("visible");
+    } else if (newUsername !== targetUser.username) {
+        // Check if username is taken (only if changed)
+        try {
+            const checkResponse = await fetch(`/api/users?username=${encodeURIComponent(newUsername)}`);
+            if (checkResponse.ok) {
+                const existing = await checkResponse.json();
+                if (existing && existing.id !== targetUser.id) {
+                    editUsernameError.textContent = "This username is already taken.";
+                    editUsernameError.classList.add("visible");
+                    valid = false;
+                } else {
+                    editUsernameError.classList.remove("visible");
+                }
+            }
+        } catch (error) {
+            console.error('Error checking username:', error);
         }
+    } else {
+        editUsernameError.classList.remove("visible");
     }
 
     // Validate profile picture URL (optional)
@@ -163,85 +208,99 @@ saveProfileBtn.addEventListener("click", () => {
 
     if (!valid) return;
 
-    const result = updateUserProfile(targetUser.id, {
-        username: newUsername,
-        bio: newBio,
-        profilePicture: newPic,
-    });
+    try {
+        const response = await fetch(`/api/users/${targetUser.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: newUsername,
+                bio: newBio,
+                profilePicture: newPic,
+            }),
+        });
+        const result = await response.json();
 
-    if (!result.success) {
-        editUsernameError.textContent = result.error;
+        if (!result.success) {
+            editUsernameError.textContent = result.error;
+            editUsernameError.classList.add("visible");
+            return;
+        }
+
+        // Close form and refresh
+        editFormSection.classList.remove("open");
+        await refreshProfile();
+
+        // Show success message
+        alert("Profile updated successfully!");
+    } catch (error) {
+        editUsernameError.textContent = 'Network error. Please try again.';
         editUsernameError.classList.add("visible");
-        return;
     }
-
-    // Close form and refresh
-    editFormSection.classList.remove("open");
-    refreshProfile();
-
-    // Update navbar if it's the current user
-    if (currentUser.id === targetUser.id) {
-        const updatedCurrentUser = getCurrentUser();
-        document.getElementById("navUsername").textContent = updatedCurrentUser.username;
-        const navAvatar = document.getElementById("navAvatar");
-        navAvatar.src = updatedCurrentUser.profilePicture
-            ? updatedCurrentUser.profilePicture
-            : `https://ui-avatars.com/api/?name=${updatedCurrentUser.username}&background=${getAvatarColor(updatedCurrentUser.id)}&color=fff`;
-    }
-
-    // Show success message
-    alert("Profile updated successfully!");
 });
 
 // ---------------------------------------------------------------
 // USER POSTS
 // ---------------------------------------------------------------
 
-function renderUserPosts() {
+async function renderUserPosts() {
     const postsContainer = document.getElementById("userPosts");
     postsContainer.innerHTML = "";
 
-    const posts = getPostsByUser(targetUser.id)
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    try {
+        const response = await fetch(`/api/posts/user/${targetUser.id}`);
+        if (!response.ok) throw new Error('Failed to load posts');
+        const posts = await response.json();
 
-    if (posts.length === 0) {
-        postsContainer.innerHTML = "<p>No posts yet.</p>";
-        return;
-    }
+        const sortedPosts = posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    posts.forEach((post) => {
-        const postCard = document.createElement("div");
-        postCard.className = "post-card";
-        postCard.style.cursor = "pointer";
-        postCard.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            window.location.href = `post.html?id=${post.id}`;
+        if (sortedPosts.length === 0) {
+            postsContainer.innerHTML = "<p>No posts yet.</p>";
+            return;
+        }
+
+        sortedPosts.forEach((post) => {
+            const postCard = document.createElement("div");
+            postCard.className = "post-card";
+            postCard.style.cursor = "pointer";
+            postCard.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `post.html?id=${post.id}`;
+            });
+
+            const content = document.createElement("p");
+            content.textContent = post.content;
+            content.style.pointerEvents = "none";
+
+            const meta = document.createElement("div");
+            meta.className = "post-meta";
+            meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
+            meta.style.pointerEvents = "none";
+
+            postCard.appendChild(content);
+            postCard.appendChild(meta);
+            postsContainer.appendChild(postCard);
         });
-
-        const content = document.createElement("p");
-        content.textContent = post.content;
-        content.style.pointerEvents = "none"; // Prevent content from intercepting clicks
-
-        const meta = document.createElement("div");
-        meta.className = "post-meta";
-        meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
-        meta.style.pointerEvents = "none"; // Prevent meta from intercepting clicks
-
-        postCard.appendChild(content);
-        postCard.appendChild(meta);
-        postsContainer.appendChild(postCard);
-    });
+    } catch (error) {
+        console.error('Failed to load posts:', error);
+        postsContainer.innerHTML = "<p>Failed to load posts. Please refresh.</p>";
+    }
 }
 
 // ---------------------------------------------------------------
 // REFRESH
 // ---------------------------------------------------------------
 
-function refreshProfile() {
-    targetUser = getUserById(targetUserId);
-    if (!targetUser) return;
-    displayUser();
+async function refreshProfile() {
+    try {
+        const response = await fetch(`/api/users/${targetUserId}`);
+        if (!response.ok) throw new Error('Failed to load user');
+        targetUser = await response.json();
+        if (!targetUser) return;
+        displayUser();
+    } catch (error) {
+        console.error('Failed to refresh profile:', error);
+    }
 }
 
 // ---------------------------------------------------------------

@@ -261,9 +261,6 @@ function createPostCard(post) {
 function renderInlineComments(container, postId, toggleBtn) {
     container.innerHTML = "";
 
-    const post = getPostById(postId);
-    if (!post) return;
-
     // ---- Add comment input row ----
     const inputRow = document.createElement("div");
     inputRow.className = "comment-input-row";
@@ -292,22 +289,32 @@ function renderInlineComments(container, postId, toggleBtn) {
         submitComment();
     });
 
-    function submitComment() {
+    async function submitComment() {
         const content = textarea.value.trim();
         if (!content) { textarea.focus(); return; }
 
-        const result = addComment(postId, currentUser.id, content);
-        if (result.success) {
-            textarea.value = "";
-            // Update comment count on toggle button
-            const updatedPost = getPostById(postId);
-            const count = updatedPost.comments.length;
-            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
-            // Re-render comments list
-            renderInlineComments(container, postId, toggleBtn);
-            container.classList.add("open");
-        } else {
-            alert("Error: " + result.error);
+        try {
+            const response = await fetch('/api/comments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId, authorId: currentUser.id, content }),
+            });
+            if (response.ok) {
+                textarea.value = "";
+                // Reload the entire comments section
+                const postResponse = await fetch(`/api/posts/${postId}`);
+                const updatedPost = await postResponse.json();
+                const count = updatedPost.comments.length;
+                toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
+                renderInlineComments(container, postId, toggleBtn);
+                container.classList.add("open");
+                showToast("Comment added!", "success");
+            } else {
+                const result = await response.json();
+                showToast("Error: " + result.error, "error");
+            }
+        } catch (error) {
+            showToast("Network error. Please try again.", "error");
         }
     }
 
@@ -320,82 +327,94 @@ function renderInlineComments(container, postId, toggleBtn) {
     const commentsList = document.createElement("div");
     commentsList.className = "inline-comments-list";
 
-    if (post.comments.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "no-comments-msg";
-        empty.textContent = "No comments yet. Be the first!";
-        commentsList.appendChild(empty);
-    } else {
-        post.comments.forEach((comment) => {
-            const commentAuthor = getUserById(comment.authorId);
-            const item = document.createElement("div");
-            item.className = "inline-comment-item";
+    // Fetch comments for this post
+    fetch(`/api/posts/${postId}/comments`)
+        .then(res => res.json())
+        .then(comments => {
+            if (comments.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "no-comments-msg";
+                empty.textContent = "No comments yet. Be the first!";
+                commentsList.appendChild(empty);
+            } else {
+                comments.forEach((comment) => {
+                    const item = document.createElement("div");
+                    item.className = "inline-comment-item";
 
-            const commentAvatar = document.createElement("img");
-            commentAvatar.className = "inline-comment-avatar";
-            commentAvatar.src = commentAuthor && commentAuthor.profilePicture
-                ? commentAuthor.profilePicture
-                : `https://ui-avatars.com/api/?name=${commentAuthor ? commentAuthor.username : "Unknown"}&background=${commentAuthor ? getAvatarColor(commentAuthor.id) : "d4a853"}&color=fff`;
+                    const commentAvatar = document.createElement("img");
+                    commentAvatar.className = "inline-comment-avatar";
+                    commentAvatar.src = comment.author && comment.author.profilePicture
+                        ? comment.author.profilePicture
+                        : `https://ui-avatars.com/api/?name=${comment.author ? comment.author.username : "Unknown"}&background=${comment.author ? getAvatarColor(comment.author.id) : "d4a853"}&color=fff`;
 
-            const bubble = document.createElement("div");
-            bubble.className = "inline-comment-bubble";
+                    const bubble = document.createElement("div");
+                    bubble.className = "inline-comment-bubble";
 
-            const commentHeader = document.createElement("div");
-            commentHeader.className = "inline-comment-header";
+                    const commentHeader = document.createElement("div");
+                    commentHeader.className = "inline-comment-header";
 
-            const commentAuthorName = document.createElement("span");
-            commentAuthorName.className = "inline-comment-author";
-            commentAuthorName.textContent = commentAuthor ? commentAuthor.username : "Unknown";
+                    const commentAuthorName = document.createElement("span");
+                    commentAuthorName.className = "inline-comment-author";
+                    commentAuthorName.textContent = comment.author ? comment.author.username : "Unknown";
 
-            const commentTime = document.createElement("span");
-            commentTime.className = "inline-comment-time";
-            commentTime.textContent = formatTimestamp(comment.timestamp);
+                    const commentTime = document.createElement("span");
+                    commentTime.className = "inline-comment-time";
+                    commentTime.textContent = formatTimestamp(comment.timestamp);
 
-            commentHeader.appendChild(commentAuthorName);
-            commentHeader.appendChild(commentTime);
+                    commentHeader.appendChild(commentAuthorName);
+                    commentHeader.appendChild(commentTime);
 
-            const commentText = document.createElement("p");
-            commentText.className = "inline-comment-text";
-            commentText.textContent = comment.content;
+                    const commentText = document.createElement("p");
+                    commentText.className = "inline-comment-text";
+                    commentText.textContent = comment.content;
 
-            bubble.appendChild(commentHeader);
-            bubble.appendChild(commentText);
+                    bubble.appendChild(commentHeader);
+                    bubble.appendChild(commentText);
 
-            // Delete comment button (only for comment author)
-            if (comment.authorId === currentUser.id) {
-                const deleteCommentBtn = document.createElement("button");
-                deleteCommentBtn.className = "btn-delete-inline-comment";
-                deleteCommentBtn.textContent = "🗑️";
-                deleteCommentBtn.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    const confirmed = await showConfirmation("Delete this comment?");
-                    if (!confirmed) return;
+                    // Delete comment button (only for comment author)
+                    if (comment.authorId === currentUser.id) {
+                        const deleteCommentBtn = document.createElement("button");
+                        deleteCommentBtn.className = "btn-delete-inline-comment";
+                        deleteCommentBtn.textContent = "🗑️";
+                        deleteCommentBtn.addEventListener("click", async (e) => {
+                            e.stopPropagation();
+                            const confirmed = await showConfirmation("Delete this comment?");
+                            if (!confirmed) return;
 
-                    try {
-                        const response = await fetch(`/api/comments/${comment.id}`, {
-                            method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ authorId: currentUser.id }),
+                            try {
+                                const response = await fetch(`/api/comments/${comment.id}`, {
+                                    method: 'DELETE',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ authorId: currentUser.id }),
+                                });
+                                if (response.ok) {
+                                    showToast("Comment deleted successfully.", "success");
+                                    renderInlineComments(container, postId, toggleBtn);
+                                    container.classList.add("open");
+                                } else {
+                                    const result = await response.json();
+                                    showToast("Error: " + result.error, "error");
+                                }
+                            } catch (error) {
+                                showToast("Network error. Please try again.", "error");
+                            }
                         });
-                        if (response.ok) {
-                            showToast("Comment deleted successfully.", "success");
-                            const updatedPost = getPostById(postId);
-                            const count = updatedPost.comments.length;
-                            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
-                            renderInlineComments(container, postId, toggleBtn);
-                            container.classList.add("open");
-                        } else {
-                            showToast("Error: " + result.error, "error");
-                        }
-                    });
-                commentHeader.appendChild(deleteCommentBtn);
-            }
+                        commentHeader.appendChild(deleteCommentBtn);
+                    }
 
-            item.appendChild(commentAvatar);
-            item.appendChild(bubble);
-            commentsList.appendChild(item);
+                    item.appendChild(commentAvatar);
+                    item.appendChild(bubble);
+                    commentsList.appendChild(item);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Failed to load comments:', error);
+            const empty = document.createElement("p");
+            empty.className = "no-comments-msg";
+            empty.textContent = "Failed to load comments.";
+            commentsList.appendChild(empty);
         });
-    }
 
     container.appendChild(inputRow);
     container.appendChild(commentsList);
@@ -405,63 +424,78 @@ function renderInlineComments(container, postId, toggleBtn) {
 // DISCOVER USERS SIDEBAR
 // ---------------------------------------------------------------
 
-function loadUserList() {
+async function loadUserList() {
     const userListContainer = document.getElementById("userList");
     userListContainer.innerHTML = "";
 
-    const allUsers = getUsers().filter(u => u.id !== currentUser.id);
+    try {
+        const response = await fetch('/api/users/discover');
+        if (!response.ok) throw new Error('Failed to load users');
+        const allUsers = await response.json();
+        const allUsers_filtered = allUsers.filter(u => u.id !== currentUser.id);
 
-    if (allUsers.length === 0) {
-        userListContainer.innerHTML = `<p style="font-size:0.82rem; color:var(--text-secondary); text-align:center; padding:12px 0;">No other users yet.</p>`;
-        return;
+        if (allUsers_filtered.length === 0) {
+            userListContainer.innerHTML = `<p style="font-size:0.82rem; color:var(--text-secondary); text-align:center; padding:12px 0;">No other users yet.</p>`;
+            return;
+        }
+
+        allUsers_filtered.forEach(user => {
+            const userCard = document.createElement("div");
+            userCard.className = "user-card";
+
+            const userInfo = document.createElement("div");
+            userInfo.className = "user-info";
+
+            const avatar = document.createElement("img");
+            avatar.className = "user-avatar-small";
+            avatar.src = user.profilePicture
+                ? user.profilePicture
+                : `https://ui-avatars.com/api/?name=${user.username}&background=${getAvatarColor(user.id)}&color=fff`;
+
+            const name = document.createElement("span");
+            name.className = "user-name-small";
+            name.textContent = user.username;
+            name.style.cursor = "pointer";
+            name.addEventListener("click", () => {
+                window.location.href = `profile.html?id=${user.id}`;
+            });
+
+            userInfo.appendChild(avatar);
+            userInfo.appendChild(name);
+
+            const followBtn = document.createElement("button");
+            const following = currentUser.following && currentUser.following.includes(user.id);
+            followBtn.className = following ? "btn-follow following" : "btn-follow";
+            followBtn.textContent = following ? "Unfollow" : "Follow";
+
+            followBtn.addEventListener("click", async () => {
+                try {
+                    const isCurrentlyFollowing = currentUser.following && currentUser.following.includes(user.id);
+                    const endpoint = isCurrentlyFollowing ? 'unfollow' : 'follow';
+                    const resp = await fetch(`/api/users/${user.id}/${endpoint}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ followerId: currentUser.id }),
+                    });
+                    if (resp.ok) {
+                        loadUserList();
+                        loadFeed();
+                    } else {
+                        alert('Failed to update follow status');
+                    }
+                } catch (error) {
+                    alert('Network error. Please try again.');
+                }
+            });
+
+            userCard.appendChild(userInfo);
+            userCard.appendChild(followBtn);
+            userListContainer.appendChild(userCard);
+        });
+    } catch (error) {
+        console.error('Failed to load users:', error);
+        userListContainer.innerHTML = `<p style="font-size:0.82rem; color:red;">Failed to load users.</p>`;
     }
-
-    allUsers.forEach(user => {
-        const userCard = document.createElement("div");
-        userCard.className = "user-card";
-
-        const userInfo = document.createElement("div");
-        userInfo.className = "user-info";
-
-        const avatar = document.createElement("img");
-        avatar.className = "user-avatar-small";
-        avatar.src = user.profilePicture
-            ? user.profilePicture
-            : `https://ui-avatars.com/api/?name=${user.username}&background=${getAvatarColor(user.id)}&color=fff`;
-
-        const name = document.createElement("span");
-        name.className = "user-name-small";
-        name.textContent = user.username;
-        name.style.cursor = "pointer";
-        name.addEventListener("click", () => {
-            window.location.href = `profile.html?id=${user.id}`;
-        });
-
-        userInfo.appendChild(avatar);
-        userInfo.appendChild(name);
-
-        const followBtn = document.createElement("button");
-        const following = isFollowing(currentUser.id, user.id);
-        followBtn.className = following ? "btn-follow following" : "btn-follow";
-        followBtn.textContent = following ? "Unfollow" : "Follow";
-
-        followBtn.addEventListener("click", () => {
-            const result = following
-                ? unfollowUser(currentUser.id, user.id)
-                : followUser(currentUser.id, user.id);
-
-            if (result.success) {
-                loadUserList();
-                loadFeed();
-            } else {
-                alert(result.error);
-            }
-        });
-
-        userCard.appendChild(userInfo);
-        userCard.appendChild(followBtn);
-        userListContainer.appendChild(userCard);
-    });
 }
 
 // ---------------------------------------------------------------
@@ -487,36 +521,17 @@ createPostForm.addEventListener("submit", async (e) => {
             modal.classList.add("hidden");
             loadFeed();
             showToast("Post created successfully!", "success");
-            // Show success message
-            const successMsg = document.createElement("div");
-            successMsg.style.cssText = `
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #d4a853;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        `;
-            successMsg.textContent = "✓ Post created! Check your profile page to see it.";
-            document.body.appendChild(successMsg);
-            setTimeout(() => {
-                successMsg.style.opacity = "0";
-                successMsg.style.transition = "opacity 0.3s";
-                setTimeout(() => successMsg.remove(), 300);
-            }, 3000);
         } else {
-            alert("Error: " + result.error);
+            const result = await response.json();
+            showToast("Error: " + result.error, "error");
         }
-    });
+    } catch (error) {
+        showToast("Network error. Please try again.", "error");
+    }
+});
 
 // ---------------------------------------------------------------
 // INIT
 // ---------------------------------------------------------------
 
-loadFeed();
 loadUserList();

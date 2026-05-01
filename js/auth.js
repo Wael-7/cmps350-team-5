@@ -238,8 +238,6 @@ if (registerForm) {
       globalError.classList.add("visible");
     }
   });
-  window.location.href = "login.html";
-});
 }
 
 // ---------------------------------------------------------------
@@ -334,3 +332,4 @@ if (loginForm) {
       globalError.classList.add("visible");
     }
   });
+}
