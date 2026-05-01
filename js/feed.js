@@ -2,26 +2,45 @@
 // feed.js — Feed Page Logic
 // ---------------------------------------------------------------
 
-initStorage();
-if (!isLoggedIn()) window.location.href = "login.html";
+// Get current user ID and load user profile
+const currentUserId = getCurrentUserId();
+if (!currentUserId) window.location.href = "login.html";
 
-const currentUser = getCurrentUser();
+let currentUser = null;
+
+// Initialize page
+async function initPage() {
+    try {
+        const response = await fetch(`/api/users/${currentUserId}`);
+        if (!response.ok) throw new Error('Failed to load user');
+        currentUser = await response.json();
+
+        // Setup navbar with user data
+        document.querySelector(".user-name").textContent = currentUser.username;
+        const navAvatar = document.querySelector(".user-avatar");
+        navAvatar.src = currentUser.profilePicture
+            ? currentUser.profilePicture
+            : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
+
+        const userProfileContainer = document.querySelector(".user-profile");
+        userProfileContainer.style.cursor = "pointer";
+        userProfileContainer.addEventListener("click", () => {
+            window.location.href = `profile.html?id=${currentUser.id}`;
+        });
+
+        // Load feed
+        loadFeed();
+    } catch (error) {
+        console.error('Failed to initialize page:', error);
+        window.location.href = "login.html";
+    }
+}
+
+initPage();
 
 // ---------------------------------------------------------------
 // NAVBAR
 // ---------------------------------------------------------------
-
-document.querySelector(".user-name").textContent = currentUser.username;
-const navAvatar = document.querySelector(".user-avatar");
-navAvatar.src = currentUser.profilePicture
-    ? currentUser.profilePicture
-    : `https://ui-avatars.com/api/?name=${currentUser.username}&background=${getAvatarColor(currentUser.id)}&color=fff`;
-
-const userProfileContainer = document.querySelector(".user-profile");
-userProfileContainer.style.cursor = "pointer";
-userProfileContainer.addEventListener("click", () => {
-    window.location.href = `profile.html?id=${currentUser.id}`;
-});
 
 document.querySelector(".btn-logout").addEventListener("click", () => {
     logoutUser();
@@ -68,30 +87,36 @@ window.addEventListener("click", (e) => {
 // FEED
 // ---------------------------------------------------------------
 
-function loadFeed() {
+async function loadFeed() {
     const feedContainer = document.getElementById("feed");
     feedContainer.innerHTML = "";
 
-    const response = await fetch(`/api/feed?userId=${currentUser.id}`)
-    const posts = await response.json()
+    try {
+        const response = await fetch(`/api/feed?userId=${currentUser.id}`);
+        if (!response.ok) throw new Error('Failed to load feed');
+        const posts = await response.json();
 
-    if (posts.length === 0) {
-        feedContainer.innerHTML = `
-            <div style="text-align:center; color:var(--text-secondary); padding:48px 20px;">
-                <p style="font-size:1rem; margin-bottom:8px;">Your feed is empty.</p>
-                <p style="font-size:0.875rem;">Follow people from the sidebar to see their posts here.</p>
-            </div>`;
-        return;
+        if (posts.length === 0) {
+            feedContainer.innerHTML = `
+              <div style="text-align:center; color:var(--text-secondary); padding:48px 20px;">
+                  <p style="font-size:1rem; margin-bottom:8px;">Your feed is empty.</p>
+                  <p style="font-size:0.875rem;">Follow people from the sidebar to see their posts here.</p>
+              </div>`;
+            return;
+        }
+
+        posts.forEach((post) => {
+            const postCard = createPostCard(post);
+            feedContainer.appendChild(postCard);
+        });
+    } catch (error) {
+        console.error('Failed to load feed:', error);
+        feedContainer.innerHTML = `<div style="text-align:center; color:red;">Failed to load feed. Please refresh.</div>`;
     }
-
-    posts.forEach((post) => {
-        const postCard = createPostCard(post);
-        feedContainer.appendChild(postCard);
-    });
 }
 
 function createPostCard(post) {
-    const author = getUserById(post.authorId);
+    const author = post.author;  // Author comes from API
 
     const card = document.createElement("div");
     card.className = "card";
@@ -140,12 +165,21 @@ function createPostCard(post) {
         const confirmed = await showConfirmation("Delete this post?");
         if (!confirmed) return;
 
-        const result = deletePost(post.id, currentUser.id);
-        if (result.success) {
-            showToast("Post deleted successfully.", "success");
-            loadFeed();
-        } else {
-            showToast("Error: " + result.error, "error");
+        try {
+            const response = await fetch(`/api/posts/${post.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ authorId: currentUser.id }),
+            });
+            if (response.ok) {
+                showToast("Post deleted successfully.", "success");
+                loadFeed();
+            } else {
+                const result = await response.json();
+                showToast("Error: " + result.error, "error");
+            }
+        } catch (error) {
+            showToast("Network error. Please try again.", "error");
         }
     });
 
@@ -164,22 +198,28 @@ function createPostCard(post) {
 
     const likeBtn = document.createElement("button");
     likeBtn.className = "like-btn";
-    if (hasLiked(post.id, currentUser.id)) likeBtn.classList.add("liked");
     const likeCount = post.likes.length;
     likeBtn.innerHTML = `❤️ ${likeCount} ${likeCount === 1 ? "like" : "likes"}`;
-    likeBtn.addEventListener("click", (e) => {
+    likeBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        const result = toggleLike(post.id, currentUser.id);
-        if (result.success) {
-            // Update like button in place without full reload
-            const updatedPost = getPostById(post.id);
-            const count = updatedPost.likes.length;
-            likeBtn.innerHTML = `❤️ ${count} ${count === 1 ? "like" : "likes"}`;
-            if (hasLiked(post.id, currentUser.id)) {
-                likeBtn.classList.add("liked");
-            } else {
-                likeBtn.classList.remove("liked");
+        try {
+            const response = await fetch('/api/likes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, postId: post.id }),
+            });
+            if (response.ok) {
+                const result = await response.json();
+                likeBtn.classList.toggle("liked", result.liked);
+                // Refetch post to get updated like count
+                const postResponse = await fetch(`/api/posts/${post.id}`);
+                const updatedPost = await postResponse.json();
+                const count = updatedPost.likes.length;
+                likeBtn.innerHTML = `❤️ ${count} ${count === 1 ? "like" : "likes"}`;
+                showToast(result.liked ? "Post liked!" : "Post unliked.", "success");
             }
+        } catch (error) {
+            showToast("Network error. Please try again.", "error");
         }
     });
 
@@ -331,18 +371,23 @@ function renderInlineComments(container, postId, toggleBtn) {
                     const confirmed = await showConfirmation("Delete this comment?");
                     if (!confirmed) return;
 
-                    const result = deleteComment(postId, comment.id, currentUser.id);
-                    if (result.success) {
-                        showToast("Comment deleted successfully.", "success");
-                        const updatedPost = getPostById(postId);
-                        const count = updatedPost.comments.length;
-                        toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
-                        renderInlineComments(container, postId, toggleBtn);
-                        container.classList.add("open");
-                    } else {
-                        showToast("Error: " + result.error, "error");
-                    }
-                });
+                    try {
+                        const response = await fetch(`/api/comments/${comment.id}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ authorId: currentUser.id }),
+                        });
+                        if (response.ok) {
+                            showToast("Comment deleted successfully.", "success");
+                            const updatedPost = getPostById(postId);
+                            const count = updatedPost.comments.length;
+                            toggleBtn.innerHTML = `💬 ${count} ${count === 1 ? "comment" : "comments"}`;
+                            renderInlineComments(container, postId, toggleBtn);
+                            container.classList.add("open");
+                        } else {
+                            showToast("Error: " + result.error, "error");
+                        }
+                    });
                 commentHeader.appendChild(deleteCommentBtn);
             }
 
@@ -426,19 +471,25 @@ function loadUserList() {
 const createPostForm = document.getElementById("createPostForm");
 const postContentInput = document.getElementById("postContent");
 
-createPostForm.addEventListener("submit", (e) => {
+createPostForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const content = postContentInput.value.trim();
     if (!content) { postContentInput.focus(); return; }
 
-    const result = createPost(currentUser.id, content);
-    if (result.success) {
-        createPostForm.reset();
-        modal.classList.add("hidden");
-        loadFeed();
-        // Show success message
-        const successMsg = document.createElement("div");
-        successMsg.style.cssText = `
+    try {
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ authorId: currentUser.id, content }),
+        });
+        if (response.ok) {
+            createPostForm.reset();
+            modal.classList.add("hidden");
+            loadFeed();
+            showToast("Post created successfully!", "success");
+            // Show success message
+            const successMsg = document.createElement("div");
+            successMsg.style.cssText = `
             position: fixed;
             top: 70px;
             left: 50%;
@@ -451,17 +502,17 @@ createPostForm.addEventListener("submit", (e) => {
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         `;
-        successMsg.textContent = "✓ Post created! Check your profile page to see it.";
-        document.body.appendChild(successMsg);
-        setTimeout(() => {
-            successMsg.style.opacity = "0";
-            successMsg.style.transition = "opacity 0.3s";
-            setTimeout(() => successMsg.remove(), 300);
-        }, 3000);
-    } else {
-        alert("Error: " + result.error);
-    }
-});
+            successMsg.textContent = "✓ Post created! Check your profile page to see it.";
+            document.body.appendChild(successMsg);
+            setTimeout(() => {
+                successMsg.style.opacity = "0";
+                successMsg.style.transition = "opacity 0.3s";
+                setTimeout(() => successMsg.remove(), 300);
+            }, 3000);
+        } else {
+            alert("Error: " + result.error);
+        }
+    });
 
 // ---------------------------------------------------------------
 // INIT

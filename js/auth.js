@@ -2,9 +2,6 @@
 // auth.js — Registration & Login logic
 //------------------------------------------------------------------
 
-// Initialize storage on every auth page load
-initStorage();
-
 // If already logged in, skip to feed
 if (isLoggedIn()) {
   window.location.href = "feed.html";
@@ -175,7 +172,7 @@ if (registerForm) {
   });
 
   // Form submission
-  registerForm.addEventListener("submit", (e) => {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
 
@@ -220,16 +217,29 @@ if (registerForm) {
 
     if (!valid) return;
 
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    })
-    const result = await response.json()
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const result = await response.json();
 
-    // Success — redirect to login
-    window.location.href = "login.html";
+      if (!result.success) {
+        globalError.textContent = result.error;
+        globalError.classList.add("visible");
+        return;
+      }
+
+      // Success — redirect to login
+      window.location.href = "login.html";
+    } catch (error) {
+      globalError.textContent = 'Network error. Please try again.';
+      globalError.classList.add("visible");
+    }
   });
+  window.location.href = "login.html";
+});
 }
 
 // ---------------------------------------------------------------
@@ -276,7 +286,7 @@ if (loginForm) {
   });
 
   // Form submission
-  loginForm.addEventListener("submit", (e) => {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     globalError.classList.remove("visible");
 
@@ -300,18 +310,27 @@ if (loginForm) {
 
     if (!valid) return;
 
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
-    const result = await response.json()
-    if (result.success) {
-      localStorage.setItem('userId', result.user.id) // Store user ID in session
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await response.json();
+
+      if (!result.success) {
+        globalError.textContent = result.error;
+        globalError.classList.add("visible");
+        return;
+      }
+
+      // Store user ID in localStorage for client-side reference
+      setCurrentUser(result.user.id);
+
+      // Success — redirect to feed
+      window.location.href = "feed.html";
+    } catch (error) {
+      globalError.textContent = 'Network error. Please try again.';
+      globalError.classList.add("visible");
     }
-
-    // Success — redirect to feed
-    window.location.href = "feed.html";
   });
-
-}
