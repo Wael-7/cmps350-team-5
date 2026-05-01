@@ -22,9 +22,6 @@
     "@biomejs/biome": "2.2.0",
     "babel-plugin-react-compiler": "1.0.0"
   },
-  "prisma": {
-    "seed": "bun prisma/seed.js"
-  },
   "ignoreScripts": [
     "sharp",
     "unrs-resolver"
