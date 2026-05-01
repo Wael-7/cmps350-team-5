@@ -3,11 +3,92 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+// ---------------------------------------------------------------
+// Prisma Schema — Hive Social Media Platform (Phase 2)
+// ---------------------------------------------------------------
+
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------
+// USER
+model User {
+  id             String   @id @default(cuid())
+  username       String   @unique
+  email          String   @unique
+  password       String
+  bio            String   @default("")
+  profilePicture String   @default("")
+  createdAt      DateTime @default(now())
+
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  followers Follow[]  @relation("Following")
+  following Follow[]  @relation("Follower")
+}
+
+// ---------------------------------------------------------------
+// POST
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments Comment[]
+  likes    Like[]
+}
+
+// ---------------------------------------------------------------
+// COMMENT
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------
+// LIKE
+// Composite PK prevents duplicate likes at the database level
+model Like {
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+// ---------------------------------------------------------------
+// FOLLOW
+// followerId  = the user doing the following
+// followingId = the user being followed
+model Follow {
+  createdAt DateTime @default(now())
+
+  followerId String
+  follower   User   @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User  @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
 }
