@@ -1,12 +1,12 @@
 import { PrismaClient } from '../src/generated/prisma/client.ts'
-import { PrismaLibSQL } from '@prisma/adapter-libsql'
+import { PrismaLibSql } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client'
 
 const libsql = createClient({
   url: process.env.DATABASE_URL,
 })
 
-const adapter = new PrismaLibSQL(libsql)
+const adapter = new PrismaLibSql(libsql)
 
 const globalForPrisma = globalThis
 
