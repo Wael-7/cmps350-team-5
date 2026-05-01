@@ -220,12 +220,12 @@ if (registerForm) {
 
     if (!valid) return;
 
-    const result = registerUser(username, email, password);
-    if (!result.success) {
-      globalError.textContent = result.error;
-      globalError.classList.add("visible");
-      return;
-    }
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
+    })
+    const result = await response.json()
 
     // Success — redirect to login
     window.location.href = "login.html";
@@ -300,12 +300,14 @@ if (loginForm) {
 
     if (!valid) return;
 
-    const result = loginUser(email, password);
-
-    if (!result.success) {
-      globalError.textContent = result.error;
-      globalError.classList.add("visible");
-      return;
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    const result = await response.json()
+    if (result.success) {
+      localStorage.setItem('userId', result.user.id) // Store user ID in session
     }
 
     // Success — redirect to feed

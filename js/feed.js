@@ -72,7 +72,8 @@ function loadFeed() {
     const feedContainer = document.getElementById("feed");
     feedContainer.innerHTML = "";
 
-    const posts = getFeedPosts(currentUser.id);
+    const response = await fetch(`/api/feed?userId=${currentUser.id}`)
+    const posts = await response.json()
 
     if (posts.length === 0) {
         feedContainer.innerHTML = `
