@@ -1,6 +1,7 @@
 import prisma from '../lib/prisma.js'
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------
+// Helpers
 
 function randomDate(maxDaysAgo) {
   return new Date(Date.now() - Math.random() * maxDaysAgo * 86_400_000)
@@ -23,7 +24,8 @@ function shuffle(arr) {
   return a
 }
 
-// ─── Static Data ──────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------
+// Static Data 
 
 const USERS = [
   { username: 'alexrivera',      email: 'alex.rivera@hive.app',      popular: true  },
@@ -170,7 +172,8 @@ const COMMENT_CONTENTS = [
   'I needed to see this today, thank you.',
 ]
 
-// ─── Seed ─────────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------
+// Seed 
 
 async function main() {
   console.log('Clearing existing data...')
@@ -180,7 +183,7 @@ async function main() {
   await prisma.post.deleteMany()
   await prisma.user.deleteMany()
 
-  // ── Users ──
+  // -- Users --
   console.log('Seeding users...')
   const users = []
   for (const u of USERS) {
@@ -197,7 +200,7 @@ async function main() {
     users.push({ ...user, popular: u.popular })
   }
 
-  // ── Posts ──
+  // -- Posts --
   console.log('Seeding posts...')
   const postsInput = []
   for (const user of users) {
@@ -221,7 +224,7 @@ async function main() {
   await prisma.post.createMany({ data: postsInput })
   const posts = await prisma.post.findMany()
 
-  // ── Follows ──
+  // -- Follows --
   console.log('Seeding follows...')
   const popularUsers = users.filter(u => u.popular)
   const followSet = new Set()
@@ -251,7 +254,7 @@ async function main() {
   }
   await prisma.follow.createMany({ data: followsInput })
 
-  // ── Likes ──
+  // -- Likes --
   console.log('Seeding likes...')
   const likeSet = new Set()
   const likesInput = []
@@ -272,7 +275,7 @@ async function main() {
   }
   await prisma.like.createMany({ data: likesInput })
 
-  // ── Comments ──
+  // -- Comments --
   console.log('Seeding comments...')
   const commentsInput = []
   while (commentsInput.length < 90) {
@@ -287,7 +290,7 @@ async function main() {
   }
   await prisma.comment.createMany({ data: commentsInput })
 
-  // ── Summary ──
+  // -- Summary --
   console.log('\nSeeding complete ✓')
   console.log(`  Users:    ${users.length}`)
   console.log(`  Posts:    ${posts.length}`)
