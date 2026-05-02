@@ -1,4 +1,4 @@
-import { PrismaClient } from '../src/generated/prisma/client.ts'
+import { PrismaClient } from '../generated/prisma/client.ts'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 
 const adapter = new PrismaLibSql({

@@ -1,0 +1,14 @@
+diff --git a/index.js b/index.js
+index 09bec9ef610ff26dced7a794ebb53fe577600966..d830d7a2f9f7f0649af7f5b6727206b2bbd4f93b 100644
+--- a/index.js
++++ b/index.js
+@@ -1,7 +1,7 @@
+ 'use strict';
+ 
+ if (process.env.NODE_ENV === 'production') {
+-  module.exports = require('react/cjs/react.production.js');
++  module.exports = require('./cjs/react.production.js');
+ } else {
+-  module.exports = require('react/cjs/react.development.js');
++  module.exports = require('./cjs/react.development.js');
+ }
