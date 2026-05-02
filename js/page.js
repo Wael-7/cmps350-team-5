@@ -66,7 +66,7 @@ function Leaderboard({ icon, title, rows, valueKey, suffix = "" }) {
   );
 }
 
-// ── Most Liked Posts list ─────────────────────────────────────
+// ── Most Liked Posts ──────────────────────────────────────────
 function TopLikedPosts({ posts }) {
   return (
     <section className={styles.section}>
@@ -81,16 +81,14 @@ function TopLikedPosts({ posts }) {
           <div key={post.id ?? i} className={styles.listRow}>
             <RankBadge index={i} />
             <div className={styles.listInfo}>
-              <div className={styles.listName} style={{ fontWeight: 400, fontSize: 13 }}>
+              <div className={styles.postContent}>
                 {post.content?.length > 90
                   ? post.content.slice(0, 90) + "…"
                   : post.content}
               </div>
               <div className={styles.listSub}>
                 by @{post.author?.username ?? "unknown"} ·{" "}
-                {post.createdAt
-                  ? new Date(post.createdAt).toLocaleDateString()
-                  : ""}
+                {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
               </div>
             </div>
             <div className={`${styles.badge} ${i < 3 ? styles.badgeAccent : ""}`}>
@@ -132,11 +130,44 @@ function PostsPerDayChart({ rows }) {
   );
 }
 
+// ── Word Cloud ────────────────────────────────────────────────
+function WordCloud({ words }) {
+  const max = words[0]?.count ?? 1;
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <span>🔤</span>
+        <h2 className={styles.sectionTitle}>Top Words in Posts</h2>
+        <div className={styles.sectionLine} />
+      </div>
+      <div className={styles.wordCloud}>
+        {words.length === 0 && (
+          <div className={styles.empty}>No words found yet.</div>
+        )}
+        {words.map(({ word, count }) => {
+          // Scale font from 13px (rare) → 26px (most common)
+          const size = Math.round(13 + 13 * (count / max));
+          return (
+            <span
+              key={word}
+              className={styles.wordPill}
+              style={{ fontSize: `${size}px` }}
+              title={`"${word}" used ${count} time${count !== 1 ? "s" : ""}`}
+            >
+              {word}
+            </span>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────
 export default function StatisticsPage() {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats]   = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]   = useState(null);
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
@@ -161,6 +192,7 @@ export default function StatisticsPage() {
   const mostActive   = stats?.mostActive    ?? [];
   const topLiked     = stats?.topLikedPosts ?? [];
   const postsPerDay  = stats?.postsPerDay   ?? [];
+  const topWords     = stats?.topWords      ?? [];
 
   return (
     <div className={styles.page}>
@@ -182,11 +214,18 @@ export default function StatisticsPage() {
       {/* ── Main ─────────────────────────────────────────────── */}
       <main className={styles.main}>
 
-        {/* Page Header */}
+        {/* ── Page Header ──────────────────────────────────────*/}
         <div className={styles.pageHeader}>
           <div className={styles.pageHeaderTop}>
             <div className={styles.pageHeaderIcon}>📊</div>
             <h1 className={styles.pageHeaderTitle}>Platform Statistics</h1>
+            <button
+              className={styles.refreshBtn}
+              onClick={fetchStats}
+              disabled={loading}
+            >
+              {loading ? "⏳" : "🔄"} Refresh
+            </button>
           </div>
           <p className={styles.pageHeaderSub}>
             Live insights across users, posts, engagement, and content.
@@ -251,8 +290,11 @@ export default function StatisticsPage() {
             {/* ── Most Liked Posts ─────────────────────────────── */}
             <TopLikedPosts posts={topLiked} />
 
-            {/* ── Posts Per Day bar chart ──────────────────────── */}
+            {/* ── Posts Per Day ────────────────────────────────── */}
             <PostsPerDayChart rows={postsPerDay} />
+
+            {/* ── Word Cloud ───────────────────────────────────── */}
+            <WordCloud words={topWords} />
           </>
         )}
 

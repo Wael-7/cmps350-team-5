@@ -89,7 +89,6 @@ export async function GET() {
       select: { createdAt: true },
     })
 
-    // Build day buckets for the last 7 days
     const dayMap = {}
     for (let d = 0; d < 7; d++) {
       const day = new Date()
@@ -105,6 +104,35 @@ export async function GET() {
     }
     const postsPerDay = Object.entries(dayMap).map(([label, value]) => ({ label, value }))
 
+    // ── Top words in post content (top 30) ───────────────────
+    const STOP_WORDS = new Set([
+      'a','an','the','and','or','but','in','on','at','to','for','of','with',
+      'is','it','i','my','me','we','he','she','they','this','that','was',
+      'are','be','been','have','has','had','do','did','will','would','could',
+      'should','can','not','no','so','if','as','by','up','out','about',
+      'just','like','get','got','from','into','its','your','our','their',
+      'you','all','more','what','when','where','who','how','than','then',
+      'there','here','which','also','some','any','each','her','his','him',
+      'them','these','those','am','were','being','very','really','dont',
+    ])
+
+    const allPosts = await prisma.post.findMany({ select: { content: true } })
+    const wordCount = {}
+    for (const post of allPosts) {
+      const words = post.content
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 3 && !STOP_WORDS.has(w))
+      for (const word of words) {
+        wordCount[word] = (wordCount[word] ?? 0) + 1
+      }
+    }
+    const topWords = Object.entries(wordCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 30)
+      .map(([word, count]) => ({ word, count }))
+
     return NextResponse.json({
       overview: {
         totalUsers, totalPosts, totalLikes, totalComments, totalFollows,
@@ -115,6 +143,7 @@ export async function GET() {
       mostActive,
       topLikedPosts,
       postsPerDay,
+      topWords,
     })
   } catch (error) {
     console.error('[/api/statistics]', error)

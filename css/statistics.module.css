@@ -407,3 +407,38 @@
   .cardsGrid { grid-template-columns: 1fr 1fr; }
   .main { padding: 70px 16px 32px; }
 }
+
+/* ── Post content text (in liked posts list) ────────────────── */
+.postContent {
+  font-size: 13px;
+  font-weight: 400;
+  color: #1a1916;
+  line-height: 1.4;
+}
+
+/* ── Refresh button (in page header) ────────────────────────── */
+.refreshBtn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #e2e0d9;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6860;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.refreshBtn:hover {
+  background: #f5f4f0;
+  color: #1a1916;
+}
+
+.refreshBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
