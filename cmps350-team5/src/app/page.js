@@ -59,6 +59,12 @@ export default function Home() {
           >
             Documentation
           </a>
+          <a
+            className={styles.secondary}
+            href="/statistics"
+          >
+            View Statistics
+          </a>
         </div>
       </main>
     </div>
