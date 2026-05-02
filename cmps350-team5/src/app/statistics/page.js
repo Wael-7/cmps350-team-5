@@ -147,6 +147,7 @@ export default function StatisticsPage() {
   const topCommentWords   = stats?.topCommentWords   ?? []
 
   return (
+    <div className={styles.pageRoot}>
     <div className={styles.page}>
 
       {/* ── Header ─────────────────────────────────────────── */}
@@ -266,6 +267,7 @@ export default function StatisticsPage() {
 
         </main>
       )}
+    </div>
     </div>
   )
 }
