@@ -464,13 +464,13 @@ async function loadUserList() {
             userInfo.appendChild(name);
 
             const followBtn = document.createElement("button");
-            const following = currentUser.following && currentUser.following.includes(user.id);
+            const following = currentUser.following && currentUser.following.some(f => f.followingId === user.id);
             followBtn.className = following ? "btn-follow following" : "btn-follow";
             followBtn.textContent = following ? "Unfollow" : "Follow";
 
             followBtn.addEventListener("click", async () => {
                 try {
-                    const isCurrentlyFollowing = currentUser.following && currentUser.following.includes(user.id);
+                    const isCurrentlyFollowing = currentUser.following && currentUser.following.some(f => f.followingId === user.id);
                     const endpoint = isCurrentlyFollowing ? 'unfollow' : 'follow';
                     const resp = await fetch(`/api/users/${user.id}/${endpoint}`, {
                         method: 'POST',
@@ -478,6 +478,9 @@ async function loadUserList() {
                         body: JSON.stringify({ followerId: currentUser.id }),
                     });
                     if (resp.ok) {
+                        // Refresh currentUser so follow state is up-to-date before re-rendering
+                        const userResp = await fetch(`/api/users/${currentUser.id}`);
+                        if (userResp.ok) currentUser = await userResp.json();
                         loadUserList();
                         loadFeed();
                     } else {
