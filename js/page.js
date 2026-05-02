@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import styles from "./statistics.module.css";
 
-// ── StatCard component ────────────────────────────────────────
+// ── StatCard ──────────────────────────────────────────────────
 function StatCard({ icon, value, label, sub, accent }) {
   return (
     <div className={`${styles.card} ${accent ? styles.cardAccent : ""}`}>
@@ -13,6 +13,56 @@ function StatCard({ icon, value, label, sub, accent }) {
       <div className={styles.cardLabel}>{label}</div>
       {sub && <div className={styles.cardSub}>{sub}</div>}
     </div>
+  );
+}
+
+// ── Rank badge ────────────────────────────────────────────────
+function RankBadge({ index }) {
+  const cls =
+    index === 0 ? styles.rankGold :
+    index === 1 ? styles.rankSilver :
+    index === 2 ? styles.rankBronze : "";
+  return <div className={`${styles.rank} ${cls}`}>{index + 1}</div>;
+}
+
+// ── Avatar ────────────────────────────────────────────────────
+function Avatar({ user }) {
+  return (
+    <div className={styles.avatar}>
+      {user.profilePicture
+        ? <img src={user.profilePicture} alt={user.username} />
+        : (user.username?.[0] ?? "?").toUpperCase()
+      }
+    </div>
+  );
+}
+
+// ── Leaderboard ───────────────────────────────────────────────
+function Leaderboard({ icon, title, rows, valueKey, suffix = "" }) {
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <span>{icon}</span>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+        <div className={styles.sectionLine} />
+      </div>
+      <div className={styles.listCard}>
+        {rows.length === 0 && <div className={styles.empty}>No data yet.</div>}
+        {rows.map((row, i) => (
+          <div key={row.id ?? i} className={styles.listRow}>
+            <RankBadge index={i} />
+            <Avatar user={row} />
+            <div className={styles.listInfo}>
+              <div className={styles.listName}>@{row.username}</div>
+              {row.email && <div className={styles.listSub}>{row.email}</div>}
+            </div>
+            <div className={`${styles.badge} ${i < 3 ? styles.badgeAccent : ""}`}>
+              {row[valueKey]}{suffix}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -39,7 +89,10 @@ export default function StatisticsPage() {
 
   useEffect(() => { fetchStats(); }, [fetchStats]);
 
-  const ov = stats?.overview ?? {};
+  const ov          = stats?.overview    ?? {};
+  const mostFollowed = stats?.mostFollowed ?? [];
+  const topPosters   = stats?.topPosters   ?? [];
+  const mostActive   = stats?.mostActive   ?? [];
 
   return (
     <div className={styles.page}>
@@ -58,7 +111,7 @@ export default function StatisticsPage() {
         </div>
       </nav>
 
-      {/* ── Main Content ─────────────────────────────────────── */}
+      {/* ── Main ─────────────────────────────────────────────── */}
       <main className={styles.main}>
 
         {/* Page Header */}
@@ -88,66 +141,54 @@ export default function StatisticsPage() {
           </div>
         )}
 
-        {/* ── Overview Cards ────────────────────────────────── */}
         {!loading && !error && (
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <span>🔢</span>
-              <h2 className={styles.sectionTitle}>Overview</h2>
-              <div className={styles.sectionLine} />
-            </div>
+          <>
+            {/* ── Overview Cards ──────────────────────────────── */}
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span>🔢</span>
+                <h2 className={styles.sectionTitle}>Overview</h2>
+                <div className={styles.sectionLine} />
+              </div>
+              <div className={styles.cardsGrid}>
+                <StatCard icon="👥" accent value={ov.totalUsers}    label="Total Users"    sub="Registered accounts" />
+                <StatCard icon="📝"       value={ov.totalPosts}    label="Total Posts"    sub="Published content" />
+                <StatCard icon="❤️"       value={ov.totalLikes}    label="Total Likes"    sub="Reactions given" />
+                <StatCard icon="💬"       value={ov.totalComments} label="Total Comments" sub="Conversations" />
+                <StatCard icon="🔗"       value={ov.totalFollows}  label="Total Follows"  sub="Connections made" />
+                <StatCard icon="📈" value={ov.avgFollowersPerUser != null ? Number(ov.avgFollowersPerUser).toFixed(1) : "—"} label="Avg Followers" sub="Per user" />
+                <StatCard icon="✍️" value={ov.avgPostsPerUser    != null ? Number(ov.avgPostsPerUser).toFixed(1)    : "—"} label="Avg Posts"     sub="Per user" />
+                <StatCard icon="💡" value={ov.avgLikesPerPost    != null ? Number(ov.avgLikesPerPost).toFixed(1)    : "—"} label="Avg Likes"     sub="Per post" />
+              </div>
+            </section>
 
-            <div className={styles.cardsGrid}>
-              <StatCard
-                icon="👥" accent
-                value={ov.totalUsers}
-                label="Total Users"
-                sub="Registered accounts"
-              />
-              <StatCard
-                icon="📝"
-                value={ov.totalPosts}
-                label="Total Posts"
-                sub="Published content"
-              />
-              <StatCard
-                icon="❤️"
-                value={ov.totalLikes}
-                label="Total Likes"
-                sub="Reactions given"
-              />
-              <StatCard
-                icon="💬"
-                value={ov.totalComments}
-                label="Total Comments"
-                sub="Conversations"
-              />
-              <StatCard
-                icon="🔗"
-                value={ov.totalFollows}
-                label="Total Follows"
-                sub="Connections made"
-              />
-              <StatCard
-                icon="📈"
-                value={ov.avgFollowersPerUser != null ? Number(ov.avgFollowersPerUser).toFixed(1) : "—"}
-                label="Avg Followers"
-                sub="Per user"
-              />
-              <StatCard
+            {/* ── Most Followed ───────────────────────────────── */}
+            <Leaderboard
+              icon="🏆"
+              title="Most Followed Users"
+              rows={mostFollowed}
+              valueKey="followerCount"
+              suffix=" followers"
+            />
+
+            {/* ── Top Posters + Most Active (side by side) ────── */}
+            <div className={styles.twoCol}>
+              <Leaderboard
                 icon="✍️"
-                value={ov.avgPostsPerUser != null ? Number(ov.avgPostsPerUser).toFixed(1) : "—"}
-                label="Avg Posts"
-                sub="Per user"
+                title="Top Posters"
+                rows={topPosters}
+                valueKey="postCount"
+                suffix=" posts"
               />
-              <StatCard
-                icon="💡"
-                value={ov.avgLikesPerPost != null ? Number(ov.avgLikesPerPost).toFixed(1) : "—"}
-                label="Avg Likes"
-                sub="Per post"
+              <Leaderboard
+                icon="⚡"
+                title="Most Active Users"
+                rows={mostActive}
+                valueKey="activityScore"
+                suffix=" actions"
               />
             </div>
-          </section>
+          </>
         )}
 
       </main>
