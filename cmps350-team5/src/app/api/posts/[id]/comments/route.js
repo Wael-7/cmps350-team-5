@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req, { params }) {
     try {
-        const comments = await commentRepository.findByPostId(params.id)
+        const { id } = await params
+        const comments = await commentRepository.findByPostId(id)
         return NextResponse.json(comments)
     } catch (error) {
         return NextResponse.json(

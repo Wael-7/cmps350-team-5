@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req, { params }) {
     try {
-        const posts = await postRepository.findByAuthorId(params.authorId)
+        const { authorId } = await params
+        const posts = await postRepository.findByAuthorId(authorId)
         return NextResponse.json(posts)
     } catch (error) {
         return NextResponse.json(

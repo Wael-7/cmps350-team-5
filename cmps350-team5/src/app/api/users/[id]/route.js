@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req, { params }) {
     try {
-        const user = await userRepository.findById(params.id)
+        const { id } = await params
+        const user = await userRepository.findById(id)
         if (!user) {
             return NextResponse.json(
                 { error: 'User not found' },
@@ -21,8 +22,9 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
     try {
+        const { id } = await params
         const updates = await req.json()
-        const user = await userRepository.update(params.id, updates)
+        const user = await userRepository.update(id, updates)
         return NextResponse.json(user)
     } catch (error) {
         return NextResponse.json(

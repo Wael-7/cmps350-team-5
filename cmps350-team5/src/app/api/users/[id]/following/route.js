@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req, { params }) {
     try {
-        const following = await followRepository.getFollowing(params.id)
+        const { id } = await params
+        const following = await followRepository.getFollowing(id)
         return NextResponse.json(following)
     } catch (error) {
         return NextResponse.json(

@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req, { params }) {
     try {
-        const post = await postRepository.findById(params.id)
+        const { id } = await params
+        const post = await postRepository.findById(id)
         if (!post) {
             return NextResponse.json(
                 { error: 'Post not found' },
@@ -21,8 +22,9 @@ export async function GET(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
+        const { id } = await params
         const { authorId } = await req.json()
-        await postRepository.delete(params.id, authorId)
+        await postRepository.delete(id, authorId)
         return NextResponse.json({ success: true })
     } catch (error) {
         return NextResponse.json(
