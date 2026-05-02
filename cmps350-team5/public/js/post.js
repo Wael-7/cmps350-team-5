@@ -93,7 +93,7 @@ async function loadPost() {
         });
 
         // Timestamp & content
-        singlePostDiv.querySelector(".post-timestamp").textContent = formatTimestamp(post.timestamp);
+        singlePostDiv.querySelector(".post-timestamp").textContent = formatTimestamp(post.createdAt);
         singlePostDiv.querySelector(".post-content").textContent = post.content;
 
         // Like button
@@ -158,7 +158,6 @@ async function updateLikeButton(post) {
                 body: JSON.stringify({ userId: currentUser.id, postId: post.id })
             });
             if (!response.ok) throw new Error("Failed to toggle like");
-            const result = await response.json();
             // Refetch post to get updated like count
             const postResponse = await fetch(`/api/posts/${post.id}`);
             if (postResponse.ok) {

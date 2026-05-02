@@ -152,7 +152,7 @@ function createPostCard(post) {
 
     const timestamp = document.createElement("span");
     timestamp.className = "post-timestamp";
-    timestamp.textContent = formatTimestamp(post.timestamp);
+    timestamp.textContent = formatTimestamp(post.createdAt);
 
     authorInfo.appendChild(authorName);
     authorInfo.appendChild(timestamp);
@@ -472,11 +472,11 @@ async function loadUserList() {
             followBtn.addEventListener("click", async () => {
                 try {
                     const isCurrentlyFollowing = currentUser.following && currentUser.following.some(f => f.followingId === user.id);
-                    const endpoint = isCurrentlyFollowing ? 'unfollow' : 'follow';
-                    const resp = await fetch(`/api/users/${user.id}/${endpoint}`, {
+                    const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+                    const resp = await fetch('/api/follow', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ followerId: currentUser.id }),
+                        body: JSON.stringify({ followerId: currentUser.id, followingId: user.id, action }),
                     });
                     if (resp.ok) {
                         // Refresh currentUser so follow state is up-to-date before re-rendering

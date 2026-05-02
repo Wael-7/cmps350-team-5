@@ -98,7 +98,7 @@ async function displayUser() {
         editBtn.style.display = "none";
         followBtn.style.display = "inline-block";
 
-        const alreadyFollowing = targetUser.followers.includes(currentUser.id);
+        const alreadyFollowing = targetUser.followers.some(f => f.followerId === currentUser.id);
         followBtn.textContent = alreadyFollowing ? "Unfollow" : "Follow";
         followBtn.style.backgroundColor = alreadyFollowing ? "var(--text-secondary)" : "";
 
@@ -108,12 +108,12 @@ async function displayUser() {
 
         newFollowBtn.addEventListener("click", async () => {
             try {
-                const isCurrentlyFollowing = targetUser.followers.includes(currentUser.id);
-                const endpoint = isCurrentlyFollowing ? 'unfollow' : 'follow';
-                const response = await fetch(`/api/users/${targetUser.id}/${endpoint}`, {
+                const isCurrentlyFollowing = targetUser.followers.some(f => f.followerId === currentUser.id);
+                const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+                const response = await fetch('/api/follow', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ followerId: currentUser.id }),
+                    body: JSON.stringify({ followerId: currentUser.id, followingId: targetUser.id, action }),
                 });
                 if (response.ok) {
                     await refreshProfile();
@@ -220,7 +220,7 @@ saveProfileBtn.addEventListener("click", async () => {
         });
         const result = await response.json();
 
-        if (!result.success) {
+        if (result.error) {
             editUsernameError.textContent = result.error;
             editUsernameError.classList.add("visible");
             return;
@@ -229,9 +229,7 @@ saveProfileBtn.addEventListener("click", async () => {
         // Close form and refresh
         editFormSection.classList.remove("open");
         await refreshProfile();
-
-        // Show success message
-        alert("Profile updated successfully!");
+        showToast("Profile updated successfully!", "success");
     } catch (error) {
         editUsernameError.textContent = 'Network error. Please try again.';
         editUsernameError.classList.add("visible");
@@ -251,7 +249,7 @@ async function renderUserPosts() {
         if (!response.ok) throw new Error('Failed to load posts');
         const posts = await response.json();
 
-        const sortedPosts = posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const sortedPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         if (sortedPosts.length === 0) {
             postsContainer.innerHTML = "<p>No posts yet.</p>";
@@ -274,7 +272,7 @@ async function renderUserPosts() {
 
             const meta = document.createElement("div");
             meta.className = "post-meta";
-            meta.textContent = `${formatTimestamp(post.timestamp)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
+            meta.textContent = `${formatTimestamp(post.createdAt)} • ${post.likes.length} ${post.likes.length === 1 ? "like" : "likes"} • ${post.comments.length} ${post.comments.length === 1 ? "comment" : "comments"}`;
             meta.style.pointerEvents = "none";
 
             postCard.appendChild(content);
@@ -311,8 +309,3 @@ document.getElementById("backToFeedBtn").addEventListener("click", () => {
     window.location.href = "feed.html";
 });
 
-// ---------------------------------------------------------------
-// INIT
-// ---------------------------------------------------------------
-
-displayUser();
