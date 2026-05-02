@@ -28,8 +28,9 @@ async function initPage() {
             window.location.href = `profile.html?id=${currentUser.id}`;
         });
 
-        // Load feed
+        // Load feed and sidebar
         loadFeed();
+        loadUserList();
     } catch (error) {
         console.error('Failed to initialize page:', error);
         window.location.href = "login.html";
@@ -533,8 +534,3 @@ createPostForm.addEventListener("submit", async (e) => {
     }
 });
 
-// ---------------------------------------------------------------
-// INIT
-// ---------------------------------------------------------------
-
-loadUserList();
