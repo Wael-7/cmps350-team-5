@@ -66,6 +66,72 @@ function Leaderboard({ icon, title, rows, valueKey, suffix = "" }) {
   );
 }
 
+// ── Most Liked Posts list ─────────────────────────────────────
+function TopLikedPosts({ posts }) {
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <span>❤️</span>
+        <h2 className={styles.sectionTitle}>Most Liked Posts</h2>
+        <div className={styles.sectionLine} />
+      </div>
+      <div className={styles.listCard}>
+        {posts.length === 0 && <div className={styles.empty}>No posts yet.</div>}
+        {posts.map((post, i) => (
+          <div key={post.id ?? i} className={styles.listRow}>
+            <RankBadge index={i} />
+            <div className={styles.listInfo}>
+              <div className={styles.listName} style={{ fontWeight: 400, fontSize: 13 }}>
+                {post.content?.length > 90
+                  ? post.content.slice(0, 90) + "…"
+                  : post.content}
+              </div>
+              <div className={styles.listSub}>
+                by @{post.author?.username ?? "unknown"} ·{" "}
+                {post.createdAt
+                  ? new Date(post.createdAt).toLocaleDateString()
+                  : ""}
+              </div>
+            </div>
+            <div className={`${styles.badge} ${i < 3 ? styles.badgeAccent : ""}`}>
+              ❤️ {post.likeCount ?? 0}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Posts Per Day bar chart ───────────────────────────────────
+function PostsPerDayChart({ rows }) {
+  const max = Math.max(...rows.map(r => r.value), 1);
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <span>📅</span>
+        <h2 className={styles.sectionTitle}>Posts Per Day — Last 7 Days</h2>
+        <div className={styles.sectionLine} />
+      </div>
+      <div className={styles.barChart}>
+        {rows.length === 0 && <div className={styles.empty}>No data yet.</div>}
+        {rows.map((row, i) => (
+          <div key={i} className={styles.barRow}>
+            <div className={styles.barLabel}>{row.label}</div>
+            <div className={styles.barTrack}>
+              <div
+                className={styles.barFill}
+                style={{ width: `${Math.round((row.value / max) * 100)}%` }}
+              />
+            </div>
+            <div className={styles.barCount}>{row.value}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────
 export default function StatisticsPage() {
   const [stats, setStats] = useState(null);
@@ -89,10 +155,12 @@ export default function StatisticsPage() {
 
   useEffect(() => { fetchStats(); }, [fetchStats]);
 
-  const ov          = stats?.overview    ?? {};
-  const mostFollowed = stats?.mostFollowed ?? [];
-  const topPosters   = stats?.topPosters   ?? [];
-  const mostActive   = stats?.mostActive   ?? [];
+  const ov           = stats?.overview      ?? {};
+  const mostFollowed = stats?.mostFollowed  ?? [];
+  const topPosters   = stats?.topPosters    ?? [];
+  const mostActive   = stats?.mostActive    ?? [];
+  const topLiked     = stats?.topLikedPosts ?? [];
+  const postsPerDay  = stats?.postsPerDay   ?? [];
 
   return (
     <div className={styles.page}>
@@ -164,30 +232,27 @@ export default function StatisticsPage() {
 
             {/* ── Most Followed ───────────────────────────────── */}
             <Leaderboard
-              icon="🏆"
-              title="Most Followed Users"
-              rows={mostFollowed}
-              valueKey="followerCount"
-              suffix=" followers"
+              icon="🏆" title="Most Followed Users"
+              rows={mostFollowed} valueKey="followerCount" suffix=" followers"
             />
 
-            {/* ── Top Posters + Most Active (side by side) ────── */}
+            {/* ── Top Posters + Most Active ────────────────────── */}
             <div className={styles.twoCol}>
               <Leaderboard
-                icon="✍️"
-                title="Top Posters"
-                rows={topPosters}
-                valueKey="postCount"
-                suffix=" posts"
+                icon="✍️" title="Top Posters"
+                rows={topPosters} valueKey="postCount" suffix=" posts"
               />
               <Leaderboard
-                icon="⚡"
-                title="Most Active Users"
-                rows={mostActive}
-                valueKey="activityScore"
-                suffix=" actions"
+                icon="⚡" title="Most Active Users"
+                rows={mostActive} valueKey="activityScore" suffix=" actions"
               />
             </div>
+
+            {/* ── Most Liked Posts ─────────────────────────────── */}
+            <TopLikedPosts posts={topLiked} />
+
+            {/* ── Posts Per Day bar chart ──────────────────────── */}
+            <PostsPerDayChart rows={postsPerDay} />
           </>
         )}
 
