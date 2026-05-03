@@ -11,6 +11,11 @@ async function initPage() {
     const currentUserId = getCurrentUserId();
     try {
         const response = await fetch(`/api/users/${currentUserId}`);
+        if (response.status === 404) {
+            logoutUser();
+            window.location.href = "login.html";
+            return;
+        }
         if (!response.ok) throw new Error("Failed to fetch user");
         currentUser = await response.json();
         setupNavbar();

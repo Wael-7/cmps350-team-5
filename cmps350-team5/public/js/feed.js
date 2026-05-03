@@ -15,6 +15,11 @@ let currentUser = null;
 async function initPage() {
     try {
         const response = await fetch(`/api/users/${currentUserId}`);
+        if (response.status === 404) {
+            logoutUser();
+            window.location.href = "login.html";
+            return;
+        }
         if (!response.ok) throw new Error('Failed to load user');
         currentUser = await response.json();
 
