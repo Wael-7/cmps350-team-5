@@ -1,5 +1,8 @@
 // Check if user is logged in
-if (!isLoggedIn()) window.location.href = "login.html";
+if (!isLoggedIn()) {
+    window.location.href = "login.html";
+    throw new Error("Not logged in");
+}
 
 let currentUser = null;
 
@@ -14,7 +17,10 @@ async function initPage() {
         loadPost();
     } catch (error) {
         console.error("Error loading user:", error);
-        window.location.href = "login.html";
+        document.querySelector(".post-detail-container")?.insertAdjacentHTML(
+            "afterbegin",
+            `<div style="text-align:center; color:red; padding:48px 20px;">Failed to load. Please refresh the page.</div>`
+        );
     }
 }
 

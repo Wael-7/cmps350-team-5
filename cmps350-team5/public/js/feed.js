@@ -4,7 +4,10 @@
 
 // Get current user ID and load user profile
 const currentUserId = getCurrentUserId();
-if (!currentUserId) window.location.href = "login.html";
+if (!currentUserId) {
+    window.location.href = "login.html";
+    throw new Error("Not logged in");
+}
 
 let currentUser = null;
 
@@ -33,7 +36,8 @@ async function initPage() {
         loadUserList();
     } catch (error) {
         console.error('Failed to initialize page:', error);
-        window.location.href = "login.html";
+        const feed = document.getElementById("feed");
+        if (feed) feed.innerHTML = `<div style="text-align:center; color:red; padding:48px 20px;">Failed to load. Please refresh the page.</div>`;
     }
 }
 

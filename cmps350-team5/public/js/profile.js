@@ -1,5 +1,8 @@
 const currentUserId = getCurrentUserId();
-if (!currentUserId) window.location.href = "login.html";
+if (!currentUserId) {
+    window.location.href = "login.html";
+    throw new Error("Not logged in");
+}
 
 const params = new URLSearchParams(window.location.search);
 let targetUserId = params.get("id") || currentUserId;
@@ -57,7 +60,10 @@ async function initPage() {
         await displayUser();
     } catch (error) {
         console.error('Failed to initialize page:', error);
-        window.location.href = "login.html";
+        document.querySelector(".profile-container")?.insertAdjacentHTML(
+            "afterbegin",
+            `<div style="text-align:center; color:red; padding:48px 20px;">Failed to load. Please refresh the page.</div>`
+        );
     }
 }
 
